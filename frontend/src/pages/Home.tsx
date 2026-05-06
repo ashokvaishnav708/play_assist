@@ -7,25 +7,25 @@ import { searchMovies, getPopularMovies } from '../services/api';
 function Home() {
     const [searchQuery, setSearchQuery] = useState("");
 
-    const [movies, setMovies] = useState([]);
-    const [error, setError] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [movies, setMovies] = useState<Movie[]>([]);
+    const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
 
-    useEffect(() => {
-        async function loadPopularMovies() {
-            try {
-                const popularMovies = await getPopularMovies();
-                setMovies(popularMovies);
-                setError(null);
-            } catch (error) {
-                console.log(error);
-                setError("Failed to load movies...")
-            } finally {
-                setLoading(false);
-            }
-        }
-        loadPopularMovies();
-    }, []);
+    // useEffect(() => {
+    //     async function loadPopularMovies() {
+    //         try {
+    //             const popularMovies = await getPopularMovies();
+    //             setMovies(popularMovies);
+    //             setError(null);
+    //         } catch (error) {
+    //             console.log(error);
+    //             setError("Failed to load movies...")
+    //         } finally {
+    //             setLoading(false);
+    //         }
+    //     }
+    //     loadPopularMovies();
+    // }, []);
 
     // const movies: Movie[] = [
     //     {
