@@ -1,7 +1,7 @@
 export type Movie = {
     url?: string;
+    id: number;
     title: string;
     description: string;
-    type: string;
     releaseDate: string;
 };
