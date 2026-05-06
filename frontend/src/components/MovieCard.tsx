@@ -1,8 +1,9 @@
 import type { Movie } from "./types";
 import '../css/MovieCard.css';
+import { useMovieContext } from "../contexts/MovieContext";
 
 function MovieCard(movie: Movie) {
-
+    const { isFavorite, addFavorite, removeFavorite } = useMovieContext();
     function onFavoriteClick() {
         alert('Favorite clicked!!');
     }
