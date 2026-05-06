@@ -4,8 +4,13 @@ import { useMovieContext } from "../contexts/MovieContext";
 
 function MovieCard(movie: Movie) {
     const { isFavorite, addFavorite, removeFavorite } = useMovieContext();
-    function onFavoriteClick() {
-        alert('Favorite clicked!!');
+
+    const favorite = isFavorite(movie.id);
+
+    function onFavoriteClick(e: Event) {
+        e.preventDefault();
+        if (favorite) removeFavorite(movie.id);
+        else addFavorite(movie);
     }
 
     return (
@@ -13,9 +18,8 @@ function MovieCard(movie: Movie) {
             <div className="movie-poster">
                 <img src={ movie.url } alt={ movie.title } />
                 <div>
-                    <button className="favorite-btn" onClick={onFavoriteClick} >
+                    <button className={`favorite-btn ${favorite ? "active": ""}`} onClick={ onFavoriteClick } >
                         🤍
-                        {/* ❤️ */}
                     </button>
                 </div>
             </div>
