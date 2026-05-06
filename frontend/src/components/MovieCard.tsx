@@ -13,7 +13,8 @@ function MovieCard(movie: Movie) {
                 <img src={ movie.url } alt={ movie.title } />
                 <div>
                     <button className="favorite-btn" onClick={onFavoriteClick} >
-                        ❤️
+                        🤍
+                        {/* ❤️ */}
                     </button>
                 </div>
             </div>
