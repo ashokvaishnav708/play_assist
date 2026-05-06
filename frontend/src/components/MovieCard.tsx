@@ -1,10 +1,4 @@
-type Movie = {
-    url?: string;
-    title: string;
-    description: string;
-    type: string;
-    releaseDate: string;
-};
+import type { Movie } from "./types";
 
 function MovieCard(movie: Movie) {
 
