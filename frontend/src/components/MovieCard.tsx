@@ -1,4 +1,5 @@
 import type { Movie } from "./types";
+import '../css/MovieCard.css';
 
 function MovieCard(movie: Movie) {
 

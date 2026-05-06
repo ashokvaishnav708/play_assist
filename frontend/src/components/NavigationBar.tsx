@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import '../css/NavigationBar.css';
 
 function NavigationBar() {
     return (
