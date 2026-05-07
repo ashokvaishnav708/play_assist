@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, Provider } from "react"
+import { createContext, useContext, useEffect, useState } from "react"
 import type { Movie } from "../components/types";
 
 const MovieContext = createContext({});

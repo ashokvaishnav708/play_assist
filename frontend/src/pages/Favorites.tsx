@@ -10,6 +10,7 @@ function Favorites()  {
         return (
             <div className='movies-grid'>
                 {
+                    // TODO: Add movie card component properly
                     favorites.map((movie) => <MovieCard />)
                 }
             </div>

@@ -1,3 +1,4 @@
+// TODO: Build a real backend for apis 
 const API_KEY = "";
 const BASE_URL = "https://api.themoviedb.org/3";
 
