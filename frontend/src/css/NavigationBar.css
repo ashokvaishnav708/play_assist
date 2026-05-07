@@ -28,6 +28,13 @@
   background-color: rgba(255, 255, 255, 0.1);
 }
 
+.app-logo {
+  flex: content;
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+}
+
 @media (max-width: 768px) {
   .nav-bar {
     padding: 1rem;
