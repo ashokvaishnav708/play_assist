@@ -8,12 +8,14 @@ from urllib.parse import quote
 router = APIRouter()
 
 BASE_URL = "https://api.themoviedb.org/3"
+POSTER_BASE_URL  ="https://image.tmdb.org/t/p/w220_and_h330_face"
 
 env_path = find_dotenv()
 load_dotenv(env_path, override=True)
 API_KEY = get_key(env_path, "TMDB_API_KEY")
 
 class Movie(BaseModel):
+    id: int
     title: str
     release_date: str
     poster_path: str | None
