@@ -11,45 +11,24 @@ function Home() {
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
 
-    // useEffect(() => {
-    //     async function loadPopularMovies() {
-    //         try {
-    //             const popularMovies = await getPopularMovies();
-    //             setMovies(popularMovies);
-    //             setError(null);
-    //         } catch (error) {
-    //             console.log(error);
-    //             setError("Failed to load movies...")
-    //         } finally {
-    //             setLoading(false);
-    //         }
-    //     }
-    //     loadPopularMovies();
-    // }, []);
-
-    // const movies: Movie[] = [
-    //     {
-    //         id: 1, 
-    //         title: "John Wick", 
-    //         releaseDate: "2020", 
-    //         description: "John Wick description"
-    //     },
-    //     {
-    //         id: 2, 
-    //         title: "Terminator", 
-    //         releaseDate: "1999", 
-    //         description: "Terminator description"
-    //     },
-    //     {
-    //         id: 3, 
-    //         title: "The Matrix", 
-    //         releaseDate: "1998", 
-    //         description: "The MAtrix description"
-    //     }
-    // ];
+    useEffect(() => {
+        async function loadPopularMovies() {
+            try {
+                const popularMovies = await getPopularMovies();
+                setMovies(popularMovies);
+                setError(null);
+            } catch (error) {
+                console.log(error);
+                setError("Failed to load movies...")
+            } finally {
+                setLoading(false);
+            }
+        }
+        loadPopularMovies();
+    }, []);
 
     function getMovieCard(movie: Movie) {
-        return <MovieCard id={movie.id} key={movie.id} title={movie.title} description={movie.description} releaseDate={movie.releaseDate} />;
+        return <MovieCard id={movie.id} key={movie.id} title={movie.title} overview={movie.overview} release_date={movie.release_date} poster_path={movie.poster_path} />;
     }
 
     async function handleSearch(e: Event) {
