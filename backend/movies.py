@@ -30,7 +30,7 @@ async def fetch_movies(url: str) -> List[Movies]:
     async with httpx.AsyncClient() as client:
         response = await client.get(url)
         fetched_movies: List = response.json()["results"]
-        movies = [Movie(**movie) for movie in fetched_movies]
+        movies = [Movie(**(movie | { "poster_path": f"{POSTER_BASE_URL}/{movie["poster_path"]}" if movie["poster_path"] else None}) ) for movie in fetched_movies]
         return movies
 
 @router.get("/popular", response_model=Movies)
