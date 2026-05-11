@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
 from pydantic import BaseModel
 from typing import List
 from dotenv import load_dotenv, find_dotenv, get_key
@@ -40,7 +40,7 @@ async def popular_movies() -> Movies:
     return Movies(movies=popular_movies)
 
 @router.get("/search", response_model=Movies)
-async def search_movie(query: str) -> Movies:
+async def search_movie(query: str = Query(...)) -> Movies:
     search_url = f"{BASE_URL}/search/movie?api_key={API_KEY}&query={quote(query)}"
     search_result = await fetch_movies(search_url)
     return Movies(movies=search_result)

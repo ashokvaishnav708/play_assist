@@ -1,13 +1,22 @@
-const API_URL = "localhost:8000";
+const API_BASE_URL = "http://127.0.0.1:8000";
 
-export async function getPopularMovies() {
-    const response = await fetch(`${API_URL}/movie/popular`);
+type Media = {
+    id: number;
+    title: string
+    release_date: string
+    poster_path?: string
+    original_language: string
+    overview: string
+};
+
+export async function getPopularMovies(): Promise<Media[]> {
+    const response = await fetch(`${API_BASE_URL}/movies/popular`);
     const data = await response.json();
-    return data.results;
+    return data.movies;
 }
 
-export async function searchMovies(query: string) {
-    const response = await fetch(`${API_URL}/search?query=${encodeURIComponent(query)}`);
+export async function searchMovies(query: string): Promise<Media[]> {
+    const response = await fetch(`${API_BASE_URL}/movies/search?query=${encodeURIComponent(query)}`);
     const data = await response.json();
-    return data.result;
+    return data.movies;
 }
