@@ -5,7 +5,7 @@ function NavigationBar() {
     return (
         <nav className="nav-bar">
             <div className="nav-bar-app">
-                <Link to='/'><img src="./app_logo.svg" className="app-logo" />Play suggest</Link>
+                <Link to='/'><img src="./app_logo.svg" className="app-logo" />Play Assist</Link>
             </div>
             <div className="nav-bar-links">
                 <Link to='/' className="nav-link">Home</Link>

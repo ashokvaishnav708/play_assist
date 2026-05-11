@@ -63,7 +63,7 @@ function Home() {
                 <button type='submit' className='search-button' >Search</button>
             </form>
             <div className='movies-grid'>
-                {movies.map((movie) => movie.title.toLowerCase().startsWith(searchQuery.toLowerCase()) && getMovieCard(movie))}
+                {movies.map((movie) => getMovieCard(movie))}
             </div>
         </div>
     );
