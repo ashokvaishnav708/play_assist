@@ -1,4 +1,4 @@
-import type { Movie } from '../components/types';
+import type { Media } from '../services/types';
 import MovieCard from '../components/MovieCard';
 import { useEffect, useState } from 'react';
 import '../css/Home.css';
@@ -7,7 +7,7 @@ import { searchMovies, getPopularMovies } from '../services/api';
 function Home() {
     const [searchQuery, setSearchQuery] = useState("");
 
-    const [movies, setMovies] = useState<Movie[]>([]);
+    const [movies, setMovies] = useState<Media[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
 
@@ -27,7 +27,7 @@ function Home() {
         loadPopularMovies();
     }, []);
 
-    function getMovieCard(movie: Movie) {
+    function getMovieCard(movie: Media) {
         return <MovieCard id={movie.id} key={movie.id} title={movie.title} overview={movie.overview} release_date={movie.release_date} poster_path={movie.poster_path} />;
     }
 
