@@ -6,8 +6,6 @@ import httpx
 from urllib.parse import quote
 import time
 
-from logger import logger
-
 router = APIRouter()
 
 BASE_URL = "https://api.themoviedb.org/3"
