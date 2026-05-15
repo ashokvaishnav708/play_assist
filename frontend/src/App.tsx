@@ -9,7 +9,7 @@ import { MovieProvider } from './contexts/MovieContext';
 function App() {
 
   return (
-    <div>
+    <MovieProvider >
       <NavigationBar />
       <main className='main-content'>
         <Routes>
@@ -18,7 +18,7 @@ function App() {
           <Route path='/ask_ai' element={<AI />} />
         </Routes>
       </main>
-    </div>
+    </MovieProvider>
   );
 }
 

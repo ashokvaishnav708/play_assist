@@ -1,14 +1,21 @@
-import { createContext, useContext, useEffect, useState } from "react"
-import type { Movie } from "../components/types";
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react"
+import type { Media } from "../services/types";
 
-const MovieContext = createContext({});
+type MovieContextType = {
+    favorites: Media[];
+    addFavorite: (movie: Media) => void;
+    removeFavorite: (movieId: number) => void;
+    isFavorite: (movieId: number) => boolean;
+}
+
+const MovieContext = createContext<MovieContextType>(null as unknown as MovieContextType);
 
 export function useMovieContext() {
     return useContext(MovieContext);
 }
 
-export function MovieProvider(children) {
-    const [favorites, setFavorites] = useState<Movie[]>([]);
+export function MovieProvider({ children }: { children: ReactNode }) {
+    const [favorites, setFavorites] = useState<Media[]>([]);
 
     useEffect(() => {
         const storedFavs = localStorage.getItem('favorites');
@@ -22,7 +29,7 @@ export function MovieProvider(children) {
         localStorage.setItem('favorites', JSON.stringify(favorites));
     }, [favorites]);
 
-    function addFavorite(movie: Movie) {
+    function addFavorite(movie: Media) {
         setFavorites(prev => [...prev, movie]);
     }
 

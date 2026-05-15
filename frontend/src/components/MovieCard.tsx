@@ -1,16 +1,16 @@
-import type { Movie } from "./types";
+import type { Media } from '../services/types';
 import '../css/MovieCard.css';
 import { useMovieContext } from "../contexts/MovieContext";
 
-function MovieCard(movie: Movie) {
-    // const { isFavorite, addFavorite, removeFavorite } = useMovieContext();
+function MovieCard(movie: Media) {
+    const { isFavorite, addFavorite, removeFavorite } = useMovieContext();
 
-    // const favorite = isFavorite(movie.id);
+    const favorite = isFavorite(movie.id);
 
     function onFavoriteClick(e: Event) {
         e.preventDefault();
-        // if (favorite) removeFavorite(movie.id);
-        // else addFavorite(movie);
+        if (favorite) removeFavorite(movie.id);
+        else addFavorite(movie);
     }
 
     return (
@@ -19,7 +19,7 @@ function MovieCard(movie: Movie) {
                 <img src={ movie.poster_path } alt={ movie.title } />
                 <div>
                     <button className={`favorite-btn`} onClick={ onFavoriteClick } >
-                        🤍
+                        { favorite ? "❤️" : "🤍" }
                     </button>
                 </div>
             </div>
