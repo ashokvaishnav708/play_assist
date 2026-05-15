@@ -28,7 +28,15 @@ function Home() {
     }, []);
 
     function getMovieCard(movie: Media) {
-        return <MovieCard id={movie.id} key={movie.id} title={movie.title} overview={movie.overview} release_date={movie.release_date} poster_path={movie.poster_path} />;
+        return <MovieCard 
+                    id={movie.id} 
+                    key={movie.id} 
+                    title={movie.title} 
+                    overview={movie.overview} 
+                    release_date={movie.release_date} 
+                    poster_path={movie.poster_path} 
+                    original_language={movie.original_language}
+                />;
     }
 
     async function handleSearch(e: Event) {
