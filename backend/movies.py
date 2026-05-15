@@ -4,6 +4,9 @@ from typing import List
 from dotenv import load_dotenv, find_dotenv, get_key
 import httpx
 from urllib.parse import quote
+import time
+
+from logger import logger
 
 router = APIRouter()
 
@@ -25,13 +28,59 @@ class Movie(BaseModel):
 class Movies(BaseModel):
     movies: List[Movie]
 
-
+def add_poster_url(movie: Movie) -> Movie:
+    if movie.poster_path is None:
+        return movie
+    else:
+        movie.poster_path = f'{POSTER_BASE_URL}/{movie.poster_path}'
+        return movie
+    
 async def fetch_movies(url: str) -> List[Movies]:
     async with httpx.AsyncClient() as client:
         response = await client.get(url)
         fetched_movies: List = response.json()["results"]
-        movies = [Movie(**(movie | { "poster_path": f'{POSTER_BASE_URL}/{movie["poster_path"]}' if movie["poster_path"] is not None else None}) ) for movie in fetched_movies]
+        movies = [add_poster_url(Movie(**movie)) for movie in fetched_movies]
         return movies
+
+async def fetch_popular_movies_seeds() -> Movies:
+    all_movies: List[Movie] = []
+    url = f"{BASE_URL}/movie/popular"
+    client = httpx.AsyncClient()
+    for page in range(1, 501):
+        params = {
+            "api_key": API_KEY,
+            "language": "en-US",
+            "page": page
+        }
+
+        try: 
+            resposne = await client.get(url, params=params)
+
+            if resposne.status_code == 200:
+                data = resposne.json()
+                fetched_movies = data["results"]
+                movies = [add_poster_url(Movie(**movie)) for movie in fetched_movies]
+                all_movies.extend(movies)
+            elif resposne.status_code == 429:
+                # Too many requests need to wait
+                retry_after = int(resposne.headers.get("Retry-After", 2))
+                print(f"Rate limit hit on page {page}. Sleeping for {retry_after} seconds...")
+                time.sleep(retry_after)
+
+                page -= 1
+                continue
+            else:
+                logger.error(f"Failed on page {page} with status code {resposne.status_code}")
+                break
+    
+        except httpx.RequestError as e:
+            logger.error(f"Error fetching seeds due to {e}")
+            break
+    
+    return Movies(movies=all_movies)
+
+
+
 
 @router.get("/popular", response_model=Movies)
 async def popular_movies() -> Movies:
