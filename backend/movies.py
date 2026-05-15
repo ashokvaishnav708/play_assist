@@ -68,11 +68,11 @@ async def fetch_popular_movies_seeds() -> Movies:
                 page -= 1
                 continue
             else:
-                logger.error(f"Failed on page {page} with status code {resposne.status_code}")
+                print(f"Failed on page {page} with status code {resposne.status_code}")
                 break
     
         except httpx.RequestError as e:
-            logger.error(f"Error fetching seeds due to {e}")
+            print(f"Error fetching seeds due to {e}")
             break
     
     return Movies(movies=all_movies)
