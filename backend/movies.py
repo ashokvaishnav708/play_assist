@@ -1,10 +1,13 @@
 from fastapi import APIRouter, Query
-from pydantic import BaseModel
 from typing import List
 from dotenv import load_dotenv, find_dotenv, get_key
 import httpx
 from urllib.parse import quote
 import time
+import logging
+from models.movies import Movie, Movies, IsLoaded
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -14,17 +17,6 @@ POSTER_BASE_URL  ="https://image.tmdb.org/t/p/w220_and_h330_face"
 env_path = find_dotenv()
 load_dotenv(env_path, override=True)
 API_KEY = get_key(env_path, "TMDB_API_KEY")
-
-class Movie(BaseModel):
-    id: int
-    title: str
-    release_date: str
-    poster_path: str | None
-    original_language: str
-    overview: str
-
-class Movies(BaseModel):
-    movies: List[Movie]
 
 def add_poster_url(movie: Movie) -> Movie:
     if movie.poster_path is None:
@@ -62,17 +54,17 @@ async def fetch_popular_movies_seeds() -> Movies:
             elif resposne.status_code == 429:
                 # Too many requests need to wait
                 retry_after = int(resposne.headers.get("Retry-After", 2))
-                print(f"Rate limit hit on page {page}. Sleeping for {retry_after} seconds...")
+                logger.warning(f"Rate limit hit on page {page}. Sleeping for {retry_after} seconds...")
                 time.sleep(retry_after)
 
                 page -= 1
                 continue
             else:
-                print(f"Failed on page {page} with status code {resposne.status_code}")
+                logger.error(f"Failed on page {page} with status code {resposne.status_code}")
                 break
     
         except httpx.RequestError as e:
-            print(f"Error fetching seeds due to {e}")
+            logger.error(f"Error fetching seeds due to {e}")
             break
     
     return Movies(movies=all_movies)
@@ -82,12 +74,25 @@ async def fetch_popular_movies_seeds() -> Movies:
 
 @router.get("/popular", response_model=Movies)
 async def popular_movies() -> Movies:
+    logger.info("Popular movies endpoint invoked")
     popular_movies_url = f"{BASE_URL}/movie/popular?api_key={API_KEY}"
     popular_movies = await fetch_movies(popular_movies_url)
     return Movies(movies=popular_movies)
 
 @router.get("/search", response_model=Movies)
 async def search_movie(query: str = Query(...)) -> Movies:
+    logger.info(f"Search movies endpoint invoked with query: {query}")
     search_url = f"{BASE_URL}/search/movie?api_key={API_KEY}&query={quote(query)}"
     search_result = await fetch_movies(search_url)
     return Movies(movies=search_result)
+
+@router.get("/load_seeds", response_model=IsLoaded)
+async def load_popular_movies_seeds() -> IsLoaded:
+    logger.info("Load seeds endpoint invoked")
+    try:
+        seeds = await fetch_popular_movies_seeds()
+        logger.info("Seeds loaded successfully")
+        return IsLoaded(is_loaded=True)
+    except Exception as e:
+        logger.error(f"Error loading seeds: {e}")
+        return IsLoaded(is_loaded=False)
