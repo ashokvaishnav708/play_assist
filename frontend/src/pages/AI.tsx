@@ -2,7 +2,7 @@ import type { Media } from '../services/types';
 import MovieCard from '../components/MovieCard';
 import { useEffect, useState } from 'react';
 import '../css/AI.css';
-import { searchMovies, getPopularMovies } from '../services/api';
+import { searchMovies, loadMovieSeeds } from '../services/api';
 
 function Home() {
     const [searchQuery, setSearchQuery] = useState("");
@@ -12,7 +12,15 @@ function Home() {
     const [loading, setLoading] = useState<boolean>(true);
 
     function getMovieCard(movie: Media) {
-        return <MovieCard id={movie.id} key={movie.id} title={movie.title} description={movie.overview} releaseDate={movie.release_date} />;
+        return <MovieCard 
+            id={movie.id} 
+            key={movie.id} 
+            title={movie.title} 
+            overview={movie.overview} 
+            release_date={movie.release_date} 
+            original_language={movie.original_language}
+            poster_path={movie.poster_path}
+        />;
     }
 
     async function handleSearch(e: Event) {
@@ -31,9 +39,16 @@ function Home() {
             setLoading(false);
         }
     }
+
+    async function handleSeedsLoading(e: Event) {
+        e.preventDefault();
+        const isSeedLoaded = await loadMovieSeeds();
+        console.log(isSeedLoaded);
+    }
     
     return (
         <div className='home'>
+            <button onClick={ handleSeedsLoading }>Load seeds</button>
             <form onSubmit={ handleSearch } className='ai-form'>
                 <input 
                     type='text' 

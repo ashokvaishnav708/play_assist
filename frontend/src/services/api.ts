@@ -14,3 +14,9 @@ export async function searchMovies(query: string): Promise<Media[]> {
     const data = await response.json();
     return data.movies;
 }
+
+export async function loadMovieSeeds(): Promise<boolean> {
+    const response = await fetch(`${API_BASE_URL}/movies/load_seeds`);
+    const data = await response.json();
+    return data.is_loaded;
+}
