@@ -36,7 +36,7 @@ async def fetch_popular_movies_seeds() -> List[Movies]:
     all_movies: List[Movie] = []
     url = f"{BASE_URL}/movie/popular"
     client = httpx.AsyncClient()
-    for page in range(1, 501):
+    for page in range(1, 10):
         params = {
             "api_key": API_KEY,
             "language": "en-US",
