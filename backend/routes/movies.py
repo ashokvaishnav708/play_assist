@@ -5,7 +5,7 @@ import httpx
 from urllib.parse import quote
 import time
 import logging
-from models.movies import Movie, Movies, IsLoaded
+from models.movies import Movie, Movies
 
 logger = logging.getLogger(__name__)
 
