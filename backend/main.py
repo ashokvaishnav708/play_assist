@@ -2,9 +2,20 @@ import uvicorn
 import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
 
-from movies import router as movies_router
-from tv_shows import router as tv_shows_router
+from routes.movies import router as movies_router
+from routes.tv_shows import router as tv_shows_router
+from routes.ask_ai import router as ask_ai
+from routes.movies import fetch_popular_movies_seeds
+
+from rag.rag_chain import rag_chain
+
+from dotenv import load_dotenv, find_dotenv, get_key
+
+env_path = find_dotenv()
+load_dotenv(env_path, override=True)
+GOOGLE_API_KEY = get_key(env_path, "GEMINI_API_KEY")
 
 logging.basicConfig(
     level=logging.INFO,
@@ -14,11 +25,24 @@ logging.basicConfig(
         logging.StreamHandler()
     ]
 )
+# Suppress logs from third-party libraries
+logging.getLogger("httpx").setLevel(logging.WARNING)
+logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
+logging.getLogger("uvicorn").setLevel(logging.WARNING)
+
 logger = logging.getLogger(__name__)
+
 
 DEBUG = True
 
-app = FastAPI(debug=DEBUG)
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    movies = await fetch_popular_movies_seeds()
+    rag_chain.build_rag_chain(movies)
+    yield
+
+
+app = FastAPI(debug=DEBUG, lifespan=lifespan)
 
 origins = [
     "http://localhost:5173",
@@ -26,13 +50,14 @@ origins = [
     ]
 
 app.add_middleware(CORSMiddleware,
-                   allow_origins=["*"],
+                   allow_origins=origins,
                    allow_credentials=True,
                    allow_methods=["*"],
                    allow_headers=["*"])
 
 app.include_router(movies_router, prefix="/movies", tags=["Movies"])
 app.include_router(tv_shows_router, prefix="/tv_shows", tags=["TVShows"])
+app.include_router(ask_ai, prefix="/ask_ai", tags=["AI"])
 
 if __name__ == "__main__":
     logger.info("Starting backend server...")
