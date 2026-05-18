@@ -85,14 +85,3 @@ async def search_movie(query: str = Query(...)) -> Movies:
     search_url = f"{BASE_URL}/search/movie?api_key={API_KEY}&query={quote(query)}"
     search_result = await fetch_movies(search_url)
     return Movies(movies=search_result)
-
-@router.get("/load_seeds", response_model=IsLoaded)
-async def load_popular_movies_seeds() -> IsLoaded:
-    logger.info("Load seeds endpoint invoked")
-    try:
-        seeds = await fetch_popular_movies_seeds()
-        logger.info("Seeds loaded successfully")
-        return IsLoaded(is_loaded=True)
-    except Exception as e:
-        logger.error(f"Error loading seeds: {e}")
-        return IsLoaded(is_loaded=False)
