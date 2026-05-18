@@ -32,7 +32,7 @@ async def fetch_movies(url: str) -> List[Movies]:
         movies = [add_poster_url(Movie(**movie)) for movie in fetched_movies]
         return movies
 
-async def fetch_popular_movies_seeds() -> Movies:
+async def fetch_popular_movies_seeds() -> List[Movies]:
     all_movies: List[Movie] = []
     url = f"{BASE_URL}/movie/popular"
     client = httpx.AsyncClient()
@@ -67,7 +67,7 @@ async def fetch_popular_movies_seeds() -> Movies:
             logger.error(f"Error fetching seeds due to {e}")
             break
     
-    return Movies(movies=all_movies)
+    return all_movies
 
 
 
