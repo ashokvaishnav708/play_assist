@@ -11,7 +11,3 @@ class Movie(BaseModel):
 
 class Movies(BaseModel):
     movies: List[Movie]
-
-
-class IsLoaded(BaseModel):
-    is_loaded: bool
