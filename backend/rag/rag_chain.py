@@ -75,9 +75,9 @@ class RAGChain:
             raise ValueError("RAG chain not intialized/built.")
         result = self.__chain.invoke({ "query": query })
         answer = result.get("result", 'No answer provided by AI.')
-        source_documents = result.get("source_documents", [])
-
-        return (answer, source_documents)
+        source_documents: List[Document] = result.get("source_documents", [])
+        movies = [Movie(**document.metadata) for document in source_documents]
+        return (answer, movies)
 
 
 

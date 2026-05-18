@@ -14,7 +14,7 @@ def movie_to_document(movie: Movie) -> Document:
     metadata = {
         "id": movie.id,
         "title": movie.title,
-        "poster": movie.poster_path,
+        "poster_path": movie.poster_path,
         "overview": movie.overview,
         "release_date": movie.release_date,
         "original_language": movie.original_language
