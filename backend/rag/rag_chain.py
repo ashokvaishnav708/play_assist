@@ -10,7 +10,7 @@ from dotenv import load_dotenv, find_dotenv, get_key
 from rag.document_builder import movies_to_documents
 from models.movies import Movie
 
-from typing import List
+from typing import List, Tuple
 
 
 from logging import getLogger
@@ -70,17 +70,15 @@ class RAGChain:
         )
         logger.info("RAG chain built successfully.")
 
-    def query(self, query: str):
+    def query(self, query: str) -> Tuple[str, List[Movie]]:
         if not self.__chain:
             raise ValueError("RAG chain not intialized/built.")
-        result = self.__chain.invoke({ "question": query })
+        result = self.__chain.invoke({ "query": query })
+        answer = result.get("result", 'No answer provided by AI.')
+        source_documents = result.get("source_documents", [])
 
-        source_titles = List({
-            doc.metadata["id"]
-            for doc in result.get("source_documents", [])
-        })
+        return (answer, source_documents)
 
-        logger.info(f"Result: {result}")
 
 
 
