@@ -1,4 +1,4 @@
-import type { Media } from "./types";
+import type { Media, AIQueryResponse } from "./types";
 
 const API_BASE_URL = "http://127.0.0.1:8000";
 
@@ -15,8 +15,14 @@ export async function searchMovies(query: string): Promise<Media[]> {
     return data.movies;
 }
 
-export async function loadMovieSeeds(): Promise<boolean> {
-    const response = await fetch(`${API_BASE_URL}/movies/load_seeds`);
+export async function askAI(question: string): Promise<AIQueryResponse> {
+    const response = await fetch(`${API_BASE_URL}/ask_ai/query`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ question })
+    });
     const data = await response.json();
-    return data.is_loaded;
+    return data;
 }

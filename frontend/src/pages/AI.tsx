@@ -2,14 +2,15 @@ import type { Media } from '../services/types';
 import MovieCard from '../components/MovieCard';
 import { useEffect, useState } from 'react';
 import '../css/AI.css';
-import { searchMovies, loadMovieSeeds } from '../services/api';
+import { askAI } from '../services/api';
 
 function Home() {
     const [searchQuery, setSearchQuery] = useState("");
 
     const [movies, setMovies] = useState<Media[]>([]);
+    const [answerAI, setAnswerAI] = useState<string>('');
     const [error, setError] = useState<string | null>(null);
-    const [loading, setLoading] = useState<boolean>(true);
+    const [loading, setLoading] = useState<boolean>(false);
 
     function getMovieCard(movie: Media) {
         return <MovieCard 
@@ -30,8 +31,9 @@ function Home() {
         setLoading(true);
 
         try {
-            const searchResults = await searchMovies(searchQuery);
-            setMovies(searchResults);
+            const { answer, movies } = await askAI(searchQuery);
+            setAnswerAI(answer);
+            setMovies(movies);
             setError(null);
         }catch(err) {
             console.log(err);
@@ -39,16 +41,9 @@ function Home() {
             setLoading(false);
         }
     }
-
-    async function handleSeedsLoading(e: Event) {
-        e.preventDefault();
-        const isSeedLoaded = await loadMovieSeeds();
-        console.log(isSeedLoaded);
-    }
     
     return (
         <div className='home'>
-            <button onClick={ handleSeedsLoading }>Load seeds</button>
             <form onSubmit={ handleSearch } className='ai-form'>
                 <input 
                     type='text' 
@@ -59,8 +54,11 @@ function Home() {
                 />
                 <button type='submit' className='query-button' >Ask</button>
             </form>
+            <div>
+                { answerAI.length > 0 ? answerAI : ''}
+            </div>
             <div className='movies-grid'>
-                {movies.map((movie) => movie.title.toLowerCase().startsWith(searchQuery.toLowerCase()) && getMovieCard(movie))}
+                {movies.map((movie) => getMovieCard(movie))}
             </div>
         </div>
     );

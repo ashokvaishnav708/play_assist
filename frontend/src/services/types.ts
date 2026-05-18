@@ -6,3 +6,8 @@ export type Media = {
     original_language: string
     overview: string
 };
+
+export type AIQueryResponse = {
+    answer: string;
+    movies: Media[];
+}
