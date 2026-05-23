@@ -4,6 +4,9 @@ from typing import List
 from dotenv import load_dotenv, find_dotenv, get_key
 import httpx
 from urllib.parse import quote
+import logging
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -27,7 +30,7 @@ class TVShows(BaseModel):
     tv_shows: List[TVShow]
 
 
-async def fetch_tv_shows(url: str) -> List[TVShows]:
+async def fetch_tv_shows(url: str) -> List[TVShow]:
     async with httpx.AsyncClient() as client:
         response = await client.get(url)
         fetched_tv_shows: List = response.json()["results"]
@@ -36,12 +39,14 @@ async def fetch_tv_shows(url: str) -> List[TVShows]:
 
 @router.get("/popular", response_model=TVShows)
 async def popular_tv_shows() -> TVShows:
+    logger.info("Popular TV shows endpoint invoked")
     popular_tv_shows_url = f"{BASE_URL}/tv/popular?api_key={API_KEY}"
     popular_tv_shows = await fetch_tv_shows(popular_tv_shows_url)
     return TVShows(tv_shows=popular_tv_shows)
 
 @router.get("/search", response_model=TVShows)
 async def search_tv_show(query: str) -> TVShows:
+    logger.info(f"Search TV shows endpoint invoked with query: {query}")
     search_url = f"{BASE_URL}/search/tv?api_key={API_KEY}&query={quote(query)}"
     search_result = await fetch_tv_shows(search_url)
     return TVShows(tv_shows=search_result)

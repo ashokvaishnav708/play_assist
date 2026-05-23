@@ -2,17 +2,26 @@ import type { Media } from '../services/types';
 import MovieCard from '../components/MovieCard';
 import { useEffect, useState } from 'react';
 import '../css/AI.css';
-import { searchMovies, getPopularMovies } from '../services/api';
+import { askAI } from '../services/api';
 
 function Home() {
     const [searchQuery, setSearchQuery] = useState("");
 
     const [movies, setMovies] = useState<Media[]>([]);
+    const [answerAI, setAnswerAI] = useState<string>('');
     const [error, setError] = useState<string | null>(null);
-    const [loading, setLoading] = useState<boolean>(true);
+    const [loading, setLoading] = useState<boolean>(false);
 
     function getMovieCard(movie: Media) {
-        return <MovieCard id={movie.id} key={movie.id} title={movie.title} description={movie.overview} releaseDate={movie.release_date} />;
+        return <MovieCard 
+            id={movie.id} 
+            key={movie.id} 
+            title={movie.title} 
+            overview={movie.overview} 
+            release_date={movie.release_date} 
+            original_language={movie.original_language}
+            poster_path={movie.poster_path}
+        />;
     }
 
     async function handleSearch(e: Event) {
@@ -22,8 +31,9 @@ function Home() {
         setLoading(true);
 
         try {
-            const searchResults = await searchMovies(searchQuery);
-            setMovies(searchResults);
+            const { answer, movies } = await askAI(searchQuery);
+            setAnswerAI(answer);
+            setMovies(movies);
             setError(null);
         }catch(err) {
             console.log(err);
@@ -44,8 +54,11 @@ function Home() {
                 />
                 <button type='submit' className='query-button' >Ask</button>
             </form>
+            <div>
+                { answerAI.length > 0 ? answerAI : ''}
+            </div>
             <div className='movies-grid'>
-                {movies.map((movie) => movie.title.toLowerCase().startsWith(searchQuery.toLowerCase()) && getMovieCard(movie))}
+                {movies.map((movie) => getMovieCard(movie))}
             </div>
         </div>
     );
