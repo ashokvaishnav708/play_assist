@@ -10,6 +10,8 @@ from routes.ask_ai import router as ask_ai
 from routes.movies import fetch_popular_movies_seeds
 
 from rag.rag_chain import rag_chain
+from agent.movies import movie_store
+from agent.agent import movie_agent
 
 from dotenv import load_dotenv, find_dotenv, get_key
 
@@ -39,6 +41,7 @@ DEBUG = True
 async def lifespan(app: FastAPI):
     movies = await fetch_popular_movies_seeds()
     rag_chain.build_rag_chain(movies)
+    movie_store.add_movies(movies)
     yield
 
 
