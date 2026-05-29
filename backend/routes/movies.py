@@ -1,11 +1,12 @@
 from fastapi import APIRouter, Query
 from typing import List
-from dotenv import load_dotenv, find_dotenv, get_key
 import httpx
 from urllib.parse import quote
 import time
 import logging
 from models.movies import Movie, Movies
+
+from utils import get_env_key
 
 logger = logging.getLogger(__name__)
 
@@ -14,9 +15,7 @@ router = APIRouter()
 BASE_URL = "https://api.themoviedb.org/3"
 POSTER_BASE_URL  ="https://image.tmdb.org/t/p/w220_and_h330_face"
 
-env_path = find_dotenv()
-load_dotenv(env_path, override=True)
-API_KEY = get_key(env_path, "TMDB_API_KEY")
+API_KEY = get_env_key("TMDB_API_KEY")
 
 def add_poster_url(movie: Movie) -> Movie:
     if movie.poster_path is None:

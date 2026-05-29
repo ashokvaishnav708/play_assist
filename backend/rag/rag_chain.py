@@ -5,7 +5,7 @@ from langchain_community.vectorstores import InMemoryVectorStore
 from langchain_core.prompts import PromptTemplate
 from langchain_core.documents import Document
 from langchain_core.vectorstores.base import VectorStoreRetriever
-from dotenv import load_dotenv, find_dotenv, get_key
+from utils import get_env_key
 
 from rag.document_builder import movies_to_documents
 from models.movies import Movie
@@ -80,11 +80,7 @@ class RAGChain:
         return (answer, movies)
 
 
-
-
-env_path = find_dotenv()
-load_dotenv(env_path, override=True)
-GOOGLE_API_KEY = get_key(env_path, "GEMINI_API_KEY")
+GOOGLE_API_KEY = get_env_key("GEMINI_API_KEY")
 
 rag_chain = RAGChain(gemini_api_key=GOOGLE_API_KEY)
 
