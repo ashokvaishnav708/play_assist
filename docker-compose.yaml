@@ -1,4 +1,14 @@
 services:
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: pg_db
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+   
   backend:
     build:
       context: ./backend
@@ -8,9 +18,12 @@ services:
       - "8000:8000"
     volumes:
       - ./backend:/app
-      - ./.env:/app/.env
+    env_file:
+      - .env
     environment:
       - PYTHONUNBUFFERED=1
+    depends_on:
+      - db
 
   frontend:
     build:
@@ -26,3 +39,5 @@ services:
       - CHOKIDAR_USEPOLLING=true
     depends_on:
       - backend
+volumes:
+  pgdata:
