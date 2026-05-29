@@ -8,7 +8,7 @@ class MovieVector(Base):
     __tablename__ = "movie_vectors"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    tmdb_id = Column(Integer(255), nullable=False)
+    tmdb_id = Column(Integer, nullable=False)
     embedding = Column(Vector(1536))
 
 
@@ -16,6 +16,7 @@ class Movie(Base):
     __tablename__ = "movies"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    tmdb_id = Column(Integer)
     title = Column(String, nullable=False)
     release_date = Column(String, nullable=False)
     poster_path = Column(String, nullable=True, default=None)

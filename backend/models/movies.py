@@ -8,6 +8,7 @@ class Movie(BaseModel):
     poster_path: str | None
     original_language: str
     overview: str
+    genre_ids: List[int]
 
 class Movies(BaseModel):
     movies: List[Movie]
