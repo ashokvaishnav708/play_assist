@@ -16,7 +16,7 @@ export async function searchMovies(query: string): Promise<Media[]> {
 }
 
 export async function askAI(question: string): Promise<AIQueryResponse> {
-    const response = await fetch(`${API_BASE_URL}/ask_ai/query`, {
+    const response = await fetch(`${API_BASE_URL}/ask_ai/query_agent`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
