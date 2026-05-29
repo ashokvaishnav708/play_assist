@@ -12,6 +12,7 @@ from routes.movies import fetch_popular_movies_seeds
 from rag.rag_chain import rag_chain
 
 from db.database import init_db
+from db.movies import add_movies_to_db
 
 from utils import get_env_key
 
@@ -39,6 +40,9 @@ DEBUG = True
 async def lifespan(app: FastAPI):
     init_db()
     movies = await fetch_popular_movies_seeds()
+
+    add_movies_to_db(movies)
+
     rag_chain.build_rag_chain(movies)
     yield
 
