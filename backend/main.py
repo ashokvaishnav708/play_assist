@@ -7,12 +7,11 @@ from contextlib import asynccontextmanager
 from routes.movies import router as movies_router
 from routes.tv_shows import router as tv_shows_router
 from routes.ask_ai import router as ask_ai
-from routes.movies import fetch_popular_movies_seeds
+from routes.movies import fetch_popular_movies_seeds, add_movies_to_db
 
 from rag.rag_chain import rag_chain
 
 from db.database import init_db
-from db.movies import add_movies_to_db
 
 from utils import get_env_key
 

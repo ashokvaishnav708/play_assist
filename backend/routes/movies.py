@@ -4,7 +4,11 @@ import httpx
 from urllib.parse import quote
 import time
 import logging
+
 from models.movies import Movie, Movies
+
+from db.models import Movie as DBMovie
+from db.database import get_db
 
 from utils import get_env_key
 
@@ -68,7 +72,21 @@ async def fetch_popular_movies_seeds() -> List[Movies]:
     
     return all_movies
 
-
+def add_movies_to_db(movies: List[Movie]):
+    with get_db() as db:
+        for movie in movies:
+            db_movie = DBMovie(
+                tmdb_id=movie.id, 
+                title=movie.title,
+                release_date=movie.release_date,
+                poster_path=movie.poster_path,
+                original_language=movie.original_language,
+                overview=movie.overview,
+                genre_ids=movie.genre_ids
+                )
+            db.add(db_movie)
+            db.commit()
+            db.refresh(db_movie)
 
 
 @router.get("/popular", response_model=Movies)
