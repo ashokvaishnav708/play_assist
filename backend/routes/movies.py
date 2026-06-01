@@ -10,7 +10,7 @@ from models.movies import Movie, Movies
 from db.models import Movie as DBMovie
 from db.database import get_db
 
-from utils import get_env_key
+from backend.utility.utils import get_env_key
 
 logger = logging.getLogger(__name__)
 
