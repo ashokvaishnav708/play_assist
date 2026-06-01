@@ -1,6 +1,6 @@
 import uvicorn
 import logging
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
@@ -10,11 +10,14 @@ from routes.ask_ai import router as ask_ai
 from routes.auth import router as auth_router
 from routes.movies import fetch_popular_movies_seeds, add_movies_to_db
 
+from models.user import UserResponse
+
 from rag.rag_chain import rag_chain
 
 from db.database import init_db
 
-from backend.utility.utils import get_env_key
+from utility.utils import get_env_key
+from utility.security.protect_route import get_current_user
 
 GOOGLE_API_KEY = get_env_key("GEMINI_API_KEY")
 
@@ -64,6 +67,10 @@ app.include_router(movies_router, prefix="/movies", tags=["Movies"])
 app.include_router(tv_shows_router, prefix="/tv_shows", tags=["TVShows"])
 app.include_router(ask_ai, prefix="/ask_ai", tags=["AI"])
 app.include_router(auth_router, prefix="/auth", tags=["Auth"])
+
+@app.get("/protected")
+def read_protected(user: UserResponse = Depends(get_current_user)):
+    return { "data": user }
 
 if __name__ == "__main__":
     logger.info("Starting backend server...")
