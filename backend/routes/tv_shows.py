@@ -5,7 +5,7 @@ import httpx
 from urllib.parse import quote
 import logging
 
-from backend.utility.utils import get_env_key
+from utility.utils import get_env_key
 
 logger = logging.getLogger(__name__)
 

@@ -1,4 +1,4 @@
-from backend.utility.utils import get_env_key
+from utility.utils import get_env_key
 import time
 import jwt
 from logging import getLogger

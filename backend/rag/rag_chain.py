@@ -5,7 +5,7 @@ from langchain_community.vectorstores import InMemoryVectorStore
 from langchain_core.prompts import PromptTemplate
 from langchain_core.documents import Document
 from langchain_core.vectorstores.base import VectorStoreRetriever
-from backend.utility.utils import get_env_key
+from utility.utils import get_env_key
 
 from rag.document_builder import movies_to_documents
 from models.movies import Movie
