@@ -16,7 +16,9 @@ class UserService:
         hashed_password = HashHelper.get_password_hash(plain_password=user_data.password)
         user_data.password = hashed_password
 
-        return self.__user_repo.create_user(user_data=user_data)
+        user = self.__user_repo.create_user(user_data=user_data)
+
+        return UserResponse(**user)
     
     def login(self, login_details: UserLoginRequest) -> UserWithToken:
         if not self.__user_repo.get_user_by_email(login_details.email):
@@ -27,6 +29,13 @@ class UserService:
         if HashHelper.verify_password(plain_password=login_details.password, hashed_password=user.password):
             token = AuthHandler.sign_jwt(user_id=user.id)
             if token:
-                raise UserWithToken(token=token)
+                return UserWithToken(token=token)
             raise HTTPException(status_code=500, detail="Unable to process request.")
         raise HTTPException(status_code=400, detail="Please check your credentials.")
+    
+    def get_user_by_id(self, user_id: int) -> UserResponse:
+        user = self.__user_repo.get_user_by_id(user_id=user_id)
+
+        if user:
+            return UserResponse(**user)
+        raise HTTPException(status_code=400, detail="User is not avaialbale.")
