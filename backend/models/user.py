@@ -2,20 +2,20 @@ from pydantic import EmailStr, BaseModel
 
 from typing import Union
 
-class UserInCreate(BaseModel):
+class UserCreateRequest(BaseModel):
     first_name: str
     last_name: str
     email: EmailStr
     password: str
 
-class UserOutput(BaseModel):
+class UserResponse(BaseModel):
     id: int
     first_name: str
     last_name: str
     email: EmailStr
     created_at: str
 
-class UserInUpdate(BaseModel):
+class UserUpdateRequest(BaseModel):
     id: int
     first_name: Union[str, None] = None
     last_name: Union[str, None] = None
@@ -23,10 +23,10 @@ class UserInUpdate(BaseModel):
     password: Union[str, None] = None
     created_at: Union[str, None] = None
 
-class UserInLogin(BaseModel):
+class UserLoginRequest(BaseModel):
     email: EmailStr
     password: str
 
 class UserWithToken(BaseModel):
     token: str
-    
+
