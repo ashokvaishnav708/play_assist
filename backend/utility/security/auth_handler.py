@@ -11,11 +11,13 @@ JWT_ALGORITHM = get_env_key("JWT_ALGORITHM")
 class AuthHandler(object):
 
     @staticmethod
-    def sign_jwt(user_id: int) -> str:
+    def sign_jwt(user_id: int, refresh: bool = False) -> str:
         payload = {
             "user_id": user_id,
-            "expires": time.time() + 900
+            "expires": time.time() + 900 # 15 minutes
         }
+
+        payload["refresh"] = refresh
 
         token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
         return token
@@ -28,7 +30,7 @@ class AuthHandler(object):
             expire_time = decode_token["expires"]
 
             if expire_time >= time.time():
-                return expire_time
+                return decode_token
             else: 
                 return None
         except:
