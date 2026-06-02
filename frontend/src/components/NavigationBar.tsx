@@ -10,6 +10,7 @@ function NavigationBar() {
             <div className="nav-bar-links">
                 <Link to='/' className="nav-link">Home</Link>
                 <Link to='/favorites' className="nav-link">Favorites</Link>
+                <Link to='/auth_form' className="nav-link">Login</Link>
                 <Link to='/ask_ai' className="nav-link">🫧 Ask AI 🤖</Link>
             </div>
         </nav>
