@@ -8,13 +8,15 @@ logger = getLogger(__name__)
 JWT_SECRET = get_env_key("JWT_SECRET")
 JWT_ALGORITHM = get_env_key("JWT_ALGORITHM")
 
+DEFAULT_EXPIRY_SECONDS = 900 # 15 minutes
+
 class AuthHandler(object):
 
     @staticmethod
-    def sign_jwt(user_id: int, refresh: bool = False) -> str:
+    def sign_jwt(user_id: int, expiry: float | None = None, refresh: bool = False) -> str:
         payload = {
             "user_id": user_id,
-            "expires": time.time() + 900 # 15 minutes
+            "expires": time.time() + (expiry if expiry is not None else DEFAULT_EXPIRY_SECONDS)
         }
 
         payload["refresh"] = refresh
