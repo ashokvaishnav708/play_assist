@@ -1,7 +1,6 @@
 import type { Media } from '../services/types';
 import MovieCard from '../components/MovieCard';
 import { useEffect, useState } from 'react';
-import '../css/Home.css';
 import { searchMovies, getPopularMovies } from '../services/api';
 
 function Home() {
@@ -59,18 +58,18 @@ function Home() {
     }
     
     return (
-        <div className='home'>
-            <form onSubmit={ handleSearch } className='search-form'>
+        <div className='p-8 w-full'>
+            <form onSubmit={ handleSearch } className='max-w-2xl mx-auto mb-8 flex gap-4 px-4'>
                 <input 
                     type='text' 
-                    className='search-input' 
+                    className='flex-1 px-4 py-3 border-none rounded bg-gray-700 text-white text-base focus:outline-none focus:ring-2 focus:ring-gray-600' 
                     placeholder='Search for movies...'
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                 />
-                <button type='submit' className='search-button' >Search</button>
+                <button type='submit' className='px-6 py-3 bg-red-600 text-white rounded font-medium transition-colors duration-200 hover:bg-red-700 whitespace-nowrap' >Search</button>
             </form>
-            <div className='movies-grid'>
+            <div className='grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-6 p-4 w-full'>
                 {movies.map((movie) => getMovieCard(movie))}
             </div>
         </div>

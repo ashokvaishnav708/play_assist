@@ -1,7 +1,6 @@
 import type { Media } from '../services/types';
 import MovieCard from '../components/MovieCard';
 import { useEffect, useState } from 'react';
-import '../css/AI.css';
 import { askAI } from '../services/api';
 
 function Home() {
@@ -43,21 +42,21 @@ function Home() {
     }
     
     return (
-        <div className='home'>
-            <form onSubmit={ handleSearch } className='ai-form'>
+        <div className='p-8 w-full'>
+            <form onSubmit={ handleSearch } className='max-w-2xl mx-auto mb-8 flex gap-4 px-4'>
                 <input 
                     type='text' 
-                    className='ai-input' 
+                    className='flex-1 px-4 py-3 border-none rounded bg-gray-700 text-white text-base focus:outline-none focus:ring-2 focus:ring-gray-600' 
                     placeholder='Ask me anything about movies or TV shows...'
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                 />
-                <button type='submit' className='query-button' >Ask</button>
+                <button type='submit' className='px-6 py-3 bg-red-600 text-white rounded font-medium transition-colors duration-200 hover:bg-red-700 whitespace-nowrap' >Ask</button>
             </form>
             <div>
                 { answerAI.length > 0 ? answerAI : ''}
             </div>
-            <div className='movies-grid'>
+            <div className='grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-6 p-4 w-full'>
                 {movies.map((movie) => getMovieCard(movie))}
             </div>
         </div>

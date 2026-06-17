@@ -4,7 +4,6 @@ import { Route, Routes } from 'react-router';
 import NavigationBar from './components/NavigationBar';
 import AI from './pages/AI';
 import AuthForm from './pages/AuthForm';
-import './css/App.css';
 import { MovieProvider } from './contexts/MovieContext';
 
 function App() {
@@ -12,7 +11,7 @@ function App() {
   return (
     <MovieProvider >
       <NavigationBar />
-      <main className='main-content'>
+      <main className='flex-1 p-8 w-full flex flex-col'>
         <Routes>
           <Route path='/' element={<Home/>} />
           <Route path='/favorites' element={<Favorites />} />

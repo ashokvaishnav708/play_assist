@@ -1,17 +1,16 @@
 import { Link } from "react-router";
-import '../css/NavigationBar.css';
 
 function NavigationBar() {
     return (
-        <nav className="nav-bar">
-            <div className="nav-bar-app">
-                <Link to='/'><img src="./app_logo.svg" className="app-logo" />Play Assist</Link>
+        <nav className="bg-black px-8 py-4 flex justify-between items-center shadow-md">
+            <div className="text-2xl font-bold">
+                <Link to='/'><img src="./app_logo.svg" className="w-6 h-6 inline mr-2" />Play Assist</Link>
             </div>
-            <div className="nav-bar-links">
-                <Link to='/' className="nav-link">Home</Link>
-                <Link to='/favorites' className="nav-link">Favorites</Link>
-                <Link to='/auth_form' className="nav-link">Login</Link>
-                <Link to='/ask_ai' className="nav-link">🫧 Ask AI 🤖</Link>
+            <div className="flex gap-8">
+                <Link to='/' className="text-base px-4 py-2 rounded transition-colors hover:bg-white/10">Home</Link>
+                <Link to='/favorites' className="text-base px-4 py-2 rounded transition-colors hover:bg-white/10">Favorites</Link>
+                <Link to='/auth_form' className="text-base px-4 py-2 rounded transition-colors hover:bg-white/10">Login</Link>
+                <Link to='/ask_ai' className="text-base px-4 py-2 rounded transition-colors hover:bg-white/10">🫧 Ask AI 🤖</Link>
             </div>
         </nav>
     );
