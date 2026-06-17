@@ -10,15 +10,17 @@ function App() {
 
   return (
     <MovieProvider >
-      <NavigationBar />
-      <main className='flex-1 p-8 w-full flex flex-col'>
-        <Routes>
-          <Route path='/' element={<Home/>} />
-          <Route path='/favorites' element={<Favorites />} />
-          <Route path='/ask_ai' element={<AI />} />
-          <Route path='/auth_form' element={ <AuthForm /> } />
-        </Routes>
-      </main>
+      <div className="flex flex-col min-h-screen bg-black">
+        <NavigationBar />
+        <main className='flex-1 w-full'>
+          <Routes>
+            <Route path='/' element={<Home/>} />
+            <Route path='/favorites' element={<Favorites />} />
+            <Route path='/ask_ai' element={<AI />} />
+            <Route path='/auth_form' element={ <AuthForm /> } />
+          </Routes>
+        </main>
+      </div>
     </MovieProvider>
   );
 }

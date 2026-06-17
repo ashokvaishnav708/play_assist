@@ -26,3 +26,42 @@ export async function askAI(question: string): Promise<AIQueryResponse> {
     const data = await response.json();
     return data;
 }
+
+export async function loginUser(email: string, password: string) {
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password })
+    });
+    
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail || "Login failed");
+    }
+    
+    return await response.json();
+}
+
+export async function signupUser(email: string, password: string, firstName: string, lastName: string) {
+    const response = await fetch(`${API_BASE_URL}/auth/signup`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            email,
+            password,
+            first_name: firstName,
+            last_name: lastName
+        })
+    });
+    
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail || "Sign up failed");
+    }
+    
+    return await response.json();
+}

@@ -42,22 +42,58 @@ function Home() {
     }
     
     return (
-        <div className='p-8 w-full'>
-            <form onSubmit={ handleSearch } className='max-w-2xl mx-auto mb-8 flex gap-4 px-4'>
-                <input 
-                    type='text' 
-                    className='flex-1 px-4 py-3 border-none rounded bg-gray-700 text-white text-base focus:outline-none focus:ring-2 focus:ring-gray-600' 
-                    placeholder='Ask me anything about movies or TV shows...'
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                />
-                <button type='submit' className='px-6 py-3 bg-red-600 text-white rounded font-medium transition-colors duration-200 hover:bg-red-700 whitespace-nowrap' >Ask</button>
-            </form>
-            <div>
-                { answerAI.length > 0 ? answerAI : ''}
-            </div>
-            <div className='grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-6 p-4 w-full'>
-                {movies.map((movie) => getMovieCard(movie))}
+        <div className='w-full min-h-[calc(100vh-80px)] bg-gradient-to-b from-gray-900 via-gray-800 to-black'>
+            <div className='max-w-7xl mx-auto px-4 py-8'>
+                {/* Hero Section */}
+                <div className='mb-12'>
+                    <h1 className='text-5xl md:text-6xl font-bold text-white mb-4'>
+                        🤖 Ask AI
+                    </h1>
+                    <p className='text-gray-400 text-lg mb-8'>Get personalized movie and TV show recommendations powered by AI</p>
+                    
+                    <form onSubmit={ handleSearch } className='flex gap-3 max-w-2xl'>
+                        <input 
+                            type='text' 
+                            className='flex-1 px-6 py-4 border-none rounded-lg bg-gray-800 text-white text-base placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all' 
+                            placeholder='Ask me anything about movies or TV shows...'
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                        <button type='submit' className='px-8 py-4 bg-gradient-to-r from-red-600 to-red-500 text-white rounded-lg font-semibold transition-all duration-200 hover:shadow-lg hover:shadow-red-500/50 whitespace-nowrap' >
+                            {loading ? 'Asking...' : 'Ask'}
+                        </button>
+                    </form>
+                </div>
+
+                {/* AI Response */}
+                {answerAI.length > 0 && (
+                    <div className='mb-12 bg-gradient-to-r from-red-900/20 to-purple-900/20 border border-red-500/30 rounded-lg p-8 backdrop-blur-sm'>
+                        <h2 className='text-xl font-bold text-white mb-4'>AI Response</h2>
+                        <p className='text-gray-200 leading-relaxed'>{answerAI}</p>
+                    </div>
+                )}
+
+                {/* Loading State */}
+                {loading && (
+                    <div className='text-center py-12'>
+                        <div className='inline-block'>
+                            <div className='animate-spin rounded-full h-12 w-12 border-4 border-gray-600 border-t-red-600'></div>
+                        </div>
+                        <p className='text-gray-400 mt-4'>AI is thinking...</p>
+                    </div>
+                )}
+
+                {/* Results Section */}
+                {movies.length > 0 && (
+                    <div className='mb-6'>
+                        <h2 className='text-2xl font-bold text-white mb-6'>
+                            Recommended Movies & Shows
+                        </h2>
+                        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
+                            {movies.map((movie) => getMovieCard(movie))}
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

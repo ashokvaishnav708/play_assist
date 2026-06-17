@@ -20,19 +20,36 @@ function Favorites()  {
 
     if (favorites && favorites.length) {
         return (
-            <div className='grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-6 p-4 w-full'>
-                {
-                    favorites.map((movie) => getMovieCard(movie))
-                }
+            <div className='w-full min-h-[calc(100vh-80px)] bg-gradient-to-b from-gray-900 via-gray-800 to-black'>
+                <div className='max-w-7xl mx-auto px-4 py-8'>
+                    <h1 className='text-5xl md:text-6xl font-bold text-white mb-2'>
+                        ❤️ Your Favorites
+                    </h1>
+                    <p className='text-gray-400 text-lg mb-8'>
+                        {favorites.length} movie{favorites.length !== 1 ? 's' : ''} added to your collection
+                    </p>
+
+                    <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
+                        {
+                            favorites.map((movie) => getMovieCard(movie))
+                        }
+                    </div>
+                </div>
             </div>
         );
     }
 
-
     return (
-        <div className='text-center p-8 bg-white/5 rounded-xl mx-auto my-8 max-w-2xl'>
-            <h2 className='mb-4 text-3xl text-red-600'> No Favorite movies yet.</h2>
-            <p className='text-gray-400 text-xl leading-relaxed'>Start adding movies to your favorites and they will appear here!</p>
+        <div className='w-full min-h-[calc(100vh-80px)] bg-gradient-to-b from-gray-900 via-gray-800 to-black flex items-center justify-center px-4'>
+            <div className='text-center'>
+                <div className='mb-6'>
+                    <span className='text-7xl'>🎬</span>
+                </div>
+                <h2 className='mb-4 text-4xl font-bold text-white'>No Favorite Movies Yet</h2>
+                <p className='text-gray-400 text-lg leading-relaxed max-w-md'>
+                    Start exploring movies and TV shows, then add your favorites to build your personal collection!
+                </p>
+            </div>
         </div>
     );
 }
