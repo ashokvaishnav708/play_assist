@@ -20,7 +20,7 @@ function Favorites()  {
 
     if (favorites && favorites.length) {
         return (
-            <div className='w-full min-h-[calc(100vh-80px)] bg-gradient-to-b from-gray-900 via-gray-800 to-black'>
+            <div className='w-full min-h-[calc(100vh-80px)] bg-linear-to-b from-gray-900 via-gray-800 to-black'>
                 <div className='max-w-7xl mx-auto px-4 py-8'>
                     <h1 className='text-5xl md:text-6xl font-bold text-white mb-2'>
                         ❤️ Your Favorites
@@ -40,7 +40,7 @@ function Favorites()  {
     }
 
     return (
-        <div className='w-full min-h-[calc(100vh-80px)] bg-gradient-to-b from-gray-900 via-gray-800 to-black flex items-center justify-center px-4'>
+        <div className='w-full min-h-[calc(100vh-80px)] bg-linear-to-b from-gray-900 via-gray-800 to-black flex items-center justify-center px-4'>
             <div className='text-center'>
                 <div className='mb-6'>
                     <span className='text-7xl'>🎬</span>

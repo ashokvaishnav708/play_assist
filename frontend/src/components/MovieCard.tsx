@@ -17,8 +17,8 @@ function MovieCard(movie: Media) {
             <div className="relative w-full flex-1 overflow-hidden bg-gray-800">
                 <img src={ movie.poster_path } alt={ movie.title } className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
                 
-                {/* Overlay Gradient */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+                <div className="absolute inset-0 bg-linear-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
                 {/* Favorite Button */}
                 <button 
@@ -30,7 +30,7 @@ function MovieCard(movie: Media) {
             </div>
 
             {/* Content Section */}
-            <div className="p-4 flex flex-col gap-2 bg-gradient-to-t from-gray-900 to-gray-900/50 border-t border-gray-800">
+            <div className="p-4 flex flex-col gap-2 bg-linear-to-t from-gray-900 to-gray-900/50 border-t border-gray-800">
                 <h3 className="text-base font-semibold text-white m-0 line-clamp-2 group-hover:text-red-400 transition-colors">
                     {movie.title}
                 </h3>

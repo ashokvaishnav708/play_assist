@@ -58,7 +58,7 @@ function Home() {
     }
     
     return (
-        <div className='w-full min-h-[calc(100vh-80px)] bg-gradient-to-b from-gray-900 via-gray-800 to-black'>
+        <div className='w-full min-h-[calc(100vh-80px)] bg-linear-to-b from-gray-900 via-gray-800 to-black'>
             <div className='max-w-7xl mx-auto px-4 py-8'>
                 {/* Hero Section */}
                 <div className='mb-12'>
@@ -75,7 +75,7 @@ function Home() {
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
-                        <button type='submit' className='px-8 py-4 bg-gradient-to-r from-red-600 to-red-500 text-white rounded-lg font-semibold transition-all duration-200 hover:shadow-lg hover:shadow-red-500/50 whitespace-nowrap' >
+                        <button type='submit' className='px-8 py-4 bg-linear-to-r from-red-600 to-red-500 text-white rounded-lg font-semibold transition-all duration-200 hover:shadow-lg hover:shadow-red-500/50 whitespace-nowrap' >
                             {loading ? 'Searching...' : 'Search'}
                         </button>
                     </form>

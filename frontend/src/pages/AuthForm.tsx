@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { loginUser, signupUser } from "../services/api";
 
 function AuthForm() {
     const [isLogin, setIsLogin] = useState(true);
@@ -10,25 +11,15 @@ function AuthForm() {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
-    const handleLogin = async (e: React.FormEvent) => {
+    const handleLogin = async (e: Event) => {
         e.preventDefault();
         setError("");
         setLoading(true);
 
         try {
-            const response = await fetch("http://127.0.0.1:8000/auth/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password }),
-            });
+            const loginData = await loginUser(email, password);
 
-            if (!response.ok) {
-                const data = await response.json();
-                throw new Error(data.detail || "Login failed");
-            }
-
-            const data = await response.json();
-            localStorage.setItem("token", data.token);
+            localStorage.setItem("token", loginData.token);
             alert("Login successful!");
             setEmail("");
             setPassword("");
@@ -39,7 +30,7 @@ function AuthForm() {
         }
     };
 
-    const handleSignUp = async (e: React.FormEvent) => {
+    const handleSignUp = async (e: Event) => {
         e.preventDefault();
         setError("");
 
@@ -51,21 +42,7 @@ function AuthForm() {
         setLoading(true);
 
         try {
-            const response = await fetch("http://127.0.0.1:8000/auth/signup", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    email,
-                    password,
-                    first_name: firstName,
-                    last_name: lastName,
-                }),
-            });
-
-            if (!response.ok) {
-                const data = await response.json();
-                throw new Error(data.detail || "Sign up failed");
-            }
+            await signupUser(email, password, firstName, lastName);
 
             alert("Sign up successful! Please log in.");
             setIsLogin(true);
@@ -82,13 +59,13 @@ function AuthForm() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black px-4">
+        <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-gray-900 via-gray-800 to-black px-4">
             <div className="w-full max-w-md">
                 {/* Card Container */}
                 <div className="bg-gray-800/50 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-700/50 p-8">
                     {/* Logo / Title */}
                     <div className="text-center mb-8">
-                        <h1 className="text-4xl font-bold bg-gradient-to-r from-red-600 to-red-500 bg-clip-text text-transparent mb-2">
+                        <h1 className="text-4xl font-bold bg-linear-to-r from-red-600 to-red-500 bg-clip-text text-transparent mb-2">
                             Play Assist
                         </h1>
                         <p className="text-gray-400 text-sm">Your entertainment companion</p>
@@ -174,7 +151,7 @@ function AuthForm() {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full py-3 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 text-white font-bold rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed mt-6"
+                                className="w-full py-3 bg-linear-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 text-white font-bold rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed mt-6"
                             >
                                 {loading ? "Logging in..." : "Login"}
                             </button>
@@ -267,7 +244,7 @@ function AuthForm() {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full py-3 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 text-white font-bold rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed mt-6"
+                                className="w-full py-3 bg-linear-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 text-white font-bold rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed mt-6"
                             >
                                 {loading ? "Creating account..." : "Create Account"}
                             </button>

@@ -42,7 +42,7 @@ function Home() {
     }
     
     return (
-        <div className='w-full min-h-[calc(100vh-80px)] bg-gradient-to-b from-gray-900 via-gray-800 to-black'>
+        <div className='w-full min-h-[calc(100vh-80px)] bg-linear-to-b from-gray-900 via-gray-800 to-black'>
             <div className='max-w-7xl mx-auto px-4 py-8'>
                 {/* Hero Section */}
                 <div className='mb-12'>
@@ -59,7 +59,7 @@ function Home() {
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
-                        <button type='submit' className='px-8 py-4 bg-gradient-to-r from-red-600 to-red-500 text-white rounded-lg font-semibold transition-all duration-200 hover:shadow-lg hover:shadow-red-500/50 whitespace-nowrap' >
+                        <button type='submit' className='px-8 py-4 bg-linear-to-r from-red-600 to-red-500 text-white rounded-lg font-semibold transition-all duration-200 hover:shadow-lg hover:shadow-red-500/50 whitespace-nowrap' >
                             {loading ? 'Asking...' : 'Ask'}
                         </button>
                     </form>
@@ -67,7 +67,7 @@ function Home() {
 
                 {/* AI Response */}
                 {answerAI.length > 0 && (
-                    <div className='mb-12 bg-gradient-to-r from-red-900/20 to-purple-900/20 border border-red-500/30 rounded-lg p-8 backdrop-blur-sm'>
+                    <div className='mb-12 bg-linear-to-r from-red-900/20 to-purple-900/20 border border-red-500/30 rounded-lg p-8 backdrop-blur-sm'>
                         <h2 className='text-xl font-bold text-white mb-4'>AI Response</h2>
                         <p className='text-gray-200 leading-relaxed'>{answerAI}</p>
                     </div>
