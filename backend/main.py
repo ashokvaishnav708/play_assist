@@ -67,7 +67,8 @@ app.add_middleware(CORSMiddleware,
                    allow_headers=["*"])
 
 app.include_router(movies_router, prefix="/movies", tags=["Movies"])
-app.include_router(tv_shows_router, prefix="/tv_shows", tags=["TVShows"])
+# TV Series will be implemented later
+# app.include_router(tv_shows_router, prefix="/tv_shows", tags=["TVShows"])
 app.include_router(ask_ai, prefix="/ask_ai", tags=["AI"])
 app.include_router(auth_router, prefix="/auth", tags=["Auth"])
 

@@ -7,7 +7,7 @@ import logging
 
 from sqlalchemy.orm import Session
 
-from models.movies import Movie, Movies
+from backend.models.movie import MovieCreateRequest as Movie, MoviesResponse as Movies
 
 from db.models import Movie as DBMovie
 

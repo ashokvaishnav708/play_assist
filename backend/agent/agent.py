@@ -3,7 +3,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import SystemMessage, HumanMessage
 from dotenv import load_dotenv, find_dotenv, get_key
 
-from models.movies import Movie
+from models.movie import MovieCreateRequest as Movie
 from agent.movies import movie_store
 
 from logging import getLogger

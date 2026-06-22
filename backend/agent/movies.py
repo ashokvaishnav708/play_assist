@@ -1,4 +1,4 @@
-from models.movies import Movie
+from models.movie import MovieCreateRequest as Movie
 
 from typing import List
 

@@ -1,8 +1,9 @@
 from typing import List
 from pydantic import BaseModel
 
-class Movie(BaseModel):
+class MovieCreateRequest(BaseModel):
     id: int
+    tmdb_id: int
     title: str
     release_date: str
     poster_path: str | None
@@ -10,5 +11,6 @@ class Movie(BaseModel):
     overview: str
     genre_ids: List[int]
 
-class Movies(BaseModel):
-    movies: List[Movie]
+
+class MoviesResponse(BaseModel):
+    movies: List[MovieCreateRequest]

@@ -8,7 +8,7 @@ from langchain_core.vectorstores.base import VectorStoreRetriever
 from utility.utils import get_env_key
 
 from rag.document_builder import movies_to_documents
-from models.movies import Movie
+from backend.models.movie import MovieCreateRequest as Movie
 
 from typing import List, Tuple
 
