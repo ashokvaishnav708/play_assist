@@ -1,11 +1,17 @@
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Query, Depends
 from typing import List
-from dotenv import load_dotenv, find_dotenv, get_key
 import httpx
 from urllib.parse import quote
 import time
 import logging
+
+from sqlalchemy.orm import Session
+
 from models.movies import Movie, Movies
+
+from db.models import Movie as DBMovie
+
+from utility.utils import get_env_key
 
 logger = logging.getLogger(__name__)
 
@@ -14,9 +20,7 @@ router = APIRouter()
 BASE_URL = "https://api.themoviedb.org/3"
 POSTER_BASE_URL  ="https://image.tmdb.org/t/p/w220_and_h330_face"
 
-env_path = find_dotenv()
-load_dotenv(env_path, override=True)
-API_KEY = get_key(env_path, "TMDB_API_KEY")
+API_KEY = get_env_key("TMDB_API_KEY")
 
 def add_poster_url(movie: Movie) -> Movie:
     if movie.poster_path is None:
@@ -32,18 +36,18 @@ async def fetch_movies(url: str) -> List[Movies]:
         movies = [add_poster_url(Movie(**movie)) for movie in fetched_movies]
         return movies
 
-async def fetch_popular_movies_seeds() -> List[Movies]:
+async def fetch_popular_movies_seeds(pages: int = 10) -> List[Movies]:
     all_movies: List[Movie] = []
     url = f"{BASE_URL}/movie/popular"
     client = httpx.AsyncClient()
-    for page in range(1, 10):
+    for page in range(1, pages):
         params = {
             "api_key": API_KEY,
             "language": "en-US",
             "page": page
         }
 
-        try: 
+        try:
             resposne = await client.get(url, params=params)
 
             if resposne.status_code == 200:
@@ -69,7 +73,20 @@ async def fetch_popular_movies_seeds() -> List[Movies]:
     
     return all_movies
 
-
+def add_movies_to_db(movies: List[Movie], db: Session):
+    for movie in movies:
+        db_movie = DBMovie(
+            tmdb_id=movie.id, 
+            title=movie.title,
+            release_date=movie.release_date,
+            poster_path=movie.poster_path,
+            original_language=movie.original_language,
+            overview=movie.overview,
+            genre_ids=movie.genre_ids
+            )
+        db.add(db_movie)
+        db.commit()
+        db.refresh(db_movie)
 
 
 @router.get("/popular", response_model=Movies)
