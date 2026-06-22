@@ -10,7 +10,6 @@ from sqlalchemy.orm import Session
 from models.movies import Movie, Movies
 
 from db.models import Movie as DBMovie
-from db.database import get_db
 
 from utility.utils import get_env_key
 
@@ -37,18 +36,18 @@ async def fetch_movies(url: str) -> List[Movies]:
         movies = [add_poster_url(Movie(**movie)) for movie in fetched_movies]
         return movies
 
-async def fetch_popular_movies_seeds() -> List[Movies]:
+async def fetch_popular_movies_seeds(pages: int = 10) -> List[Movies]:
     all_movies: List[Movie] = []
     url = f"{BASE_URL}/movie/popular"
     client = httpx.AsyncClient()
-    for page in range(1, 10):
+    for page in range(1, pages):
         params = {
             "api_key": API_KEY,
             "language": "en-US",
             "page": page
         }
 
-        try: 
+        try:
             resposne = await client.get(url, params=params)
 
             if resposne.status_code == 200:
@@ -74,7 +73,7 @@ async def fetch_popular_movies_seeds() -> List[Movies]:
     
     return all_movies
 
-def add_movies_to_db(movies: List[Movie], db: Session = Depends(get_db)):
+def add_movies_to_db(movies: List[Movie], db: Session):
     for movie in movies:
         db_movie = DBMovie(
             tmdb_id=movie.id, 

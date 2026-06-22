@@ -72,7 +72,7 @@ class RAGChain:
 
     def query(self, query: str) -> Tuple[str, List[Movie]]:
         if not self.__chain:
-            raise ValueError("RAG chain not intialized/built.")
+            raise ValueError("RAG chain not initialized/built.")
         result = self.__chain.invoke({ "query": query })
         answer = result.get("result", 'No answer provided by AI.')
         source_documents: List[Document] = result.get("source_documents", [])

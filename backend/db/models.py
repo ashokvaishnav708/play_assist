@@ -24,6 +24,19 @@ class Movie(Base):
     overview = Column(String, nullable=False)
     genre_ids = Column(ARRAY(Integer, dimensions=1), nullable=False)
 
+class TVSeries(Base):
+    __tablename__ = "tv_Series"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    tmdb_id = Column(Integer)
+    title = Column(String, nullable=False)
+    release_date = Column(String, nullable=False)
+    poster_path = Column(String, nullable=True, default=None)
+    original_language = Column(String, nullable=False)
+    overview = Column(String, nullable=False)
+    genre_ids = Column(ARRAY(Integer, dimensions=1), nullable=False)
+
+
 
 class User(Base):
     __tablename__ = "users"
@@ -34,3 +47,5 @@ class User(Base):
     email = Column(String(70), unique=True)
     password = Column(String(250))
     created_at = Column(DateTime)
+    favorite_movies = Column(ARRAY(Integer, dimensions=1), nullable=False)
+    favorites_tv_series = Column(ARRAY(Integer, dimensions=1), nullable=False)

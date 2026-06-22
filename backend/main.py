@@ -14,7 +14,7 @@ from models.user import UserResponse
 
 from rag.rag_chain import rag_chain
 
-from db.database import init_db
+from db.database import init_db, get_db
 
 from utility.utils import get_env_key
 from utility.security.protect_route import get_current_user
@@ -44,7 +44,7 @@ async def lifespan(app: FastAPI):
     init_db()
     movies = await fetch_popular_movies_seeds()
 
-    add_movies_to_db(movies)
+    # add_movies_to_db(movies, Depends(get_db))
 
     rag_chain.build_rag_chain(movies)
     yield
