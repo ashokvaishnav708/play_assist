@@ -13,6 +13,8 @@ from routes.movies import fetch_popular_movies_seeds, add_movies_to_db
 from models.user import UserResponse
 
 from rag.rag_chain import rag_chain
+from agent.movies import movie_store
+from agent.agent import movie_agent
 
 from db.database import init_db, get_db
 
@@ -47,6 +49,7 @@ async def lifespan(app: FastAPI):
     # add_movies_to_db(movies, Depends(get_db))
 
     rag_chain.build_rag_chain(movies)
+    movie_store.add_movies(movies)
     yield
 
 
