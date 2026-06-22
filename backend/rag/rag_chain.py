@@ -5,7 +5,7 @@ from langchain_community.vectorstores import InMemoryVectorStore
 from langchain_core.prompts import PromptTemplate
 from langchain_core.documents import Document
 from langchain_core.vectorstores.base import VectorStoreRetriever
-from utils import get_env_key
+from utility.utils import get_env_key
 
 from rag.document_builder import movies_to_documents
 from models.movies import Movie
@@ -72,7 +72,7 @@ class RAGChain:
 
     def query(self, query: str) -> Tuple[str, List[Movie]]:
         if not self.__chain:
-            raise ValueError("RAG chain not intialized/built.")
+            raise ValueError("RAG chain not initialized/built.")
         result = self.__chain.invoke({ "query": query })
         answer = result.get("result", 'No answer provided by AI.')
         source_documents: List[Document] = result.get("source_documents", [])
