@@ -2,7 +2,7 @@ from models.movie import MovieCreateRequest as Movie
 
 from typing import List
 
-class Movies:
+class MovieStoreMock:
     def __init__(self):
         self.__movies: List[Movie] = []
 
@@ -16,5 +16,5 @@ class Movies:
         self.__movies = [*self.__movies, *movies]
 
 
-movie_store = Movies()
+movie_store = MovieStoreMock()
 
