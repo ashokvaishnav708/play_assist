@@ -4,7 +4,7 @@ from langchain_core.messages import SystemMessage, HumanMessage
 from dotenv import load_dotenv, find_dotenv, get_key
 
 from models.movie import MovieCreateRequest as Movie
-from agent.movie_store_mock import movie_store
+from backend.ai.movie_store_mock import movie_store
 
 from logging import getLogger
 logger = getLogger(__name__)

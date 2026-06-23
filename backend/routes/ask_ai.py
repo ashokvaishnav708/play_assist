@@ -2,8 +2,8 @@ from fastapi import APIRouter
 from logging import getLogger
 
 from models.ask_ai import QueryRequest, QueryResponse
-from rag.rag_chain import rag_chain
-from agent.agent import movie_agent
+from ai.rag_chain import rag_chain
+from backend.ai.agent import movie_agent
 
 logger = getLogger(__name__)
 
