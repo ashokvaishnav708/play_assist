@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Query, Depends
 from typing import List
 import httpx
-import time
 import logging
 
 from sqlalchemy.orm import Session
@@ -30,16 +29,6 @@ def add_poster_url(movie: Movie) -> Movie:
     else:
         movie.poster_path = f'{POSTER_BASE_URL}/{movie.poster_path}'
         return movie
-    
-async def fetch_movies(url: str, params: dict = {}) -> List[Movies]:
-    async with httpx.AsyncClient() as client:
-        try:
-            response = await client.get(url, params=params)
-            fetched_movies: List = response.json()["results"]
-            movies = [add_poster_url(Movie(**movie)) for movie in fetched_movies]
-            return movies
-        except httpx.RequestError as e:
-            raise httpx.RequestError(f"HTTP Request Error: {e}")
 
     
 async def fetch_latest_popular_movies(page: int = 1) -> List[Movie]:
@@ -51,11 +40,17 @@ async def fetch_latest_popular_movies(page: int = 1) -> List[Movie]:
         }
     movies: List[Movie] = []
 
-    try:
-        movies = fetch_movies(url, params)
+    async with httpx.AsyncClient() as client:
+        try:
+            response = await client.get(url, params=params)
+            fetched_movies: List = response.json()["results"]
+            movies = [add_poster_url(Movie(page=page, **movie)) for movie in fetched_movies]
 
-    except Exception as e:
-        logger.error(f"Error fetching latest popluar movies : {e}")
+        except httpx.RequestError as e:
+            raise logger.error(f"HTTP Request Error: {e}")
+
+        except Exception as e:
+            logger.error(f"Error fetching latest popluar movies : {e}")
 
     return movies
 
