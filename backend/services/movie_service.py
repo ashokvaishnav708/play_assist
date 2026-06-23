@@ -2,6 +2,7 @@ from db.respository.movie import MovieRepository
 from models.movie import MovieCreateRequest as Movie
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
+from ai.llm import get_embedding_model
 
 from typing import List
 
@@ -9,12 +10,23 @@ from typing import List
 class MovieService:
     def __int__(self, session: Session):
         self.__movie_repo = MovieRepository(session=session)
+        self.__embedding_model = get_embedding_model()
 
-    def add_movie(self, movie_data: Movie) -> Movie:
-        if self.__movie_repo.get_movie_by_tmdb_id(movie_data.tmdb_id):
+    def add_movie(self, movie: Movie) -> Movie:
+        if self.__movie_repo.get_movie_by_tmdb_id(movie.tmdb_id):
             raise HTTPException(status_code=400, detail="Movie already exists. Skipping...")
 
-        movie = self.__movie_repo.create_movie(movie_data=movie_data)
+        movie_text = f"""
+        Title: {movie.title}
+        Poster: {movie.poster_path}
+        Overview: {movie.overview}
+        Release Date: {movie.release_date}
+        Original Language: {movie.original_language}
+        Genre: {movie.genre_ids}
+        """.strip()
+        embedding = self.__embedding_model.embed_query(movie_text)
+
+        movie = self.__movie_repo.create_movie(movie, embedding)
 
         return Movie(**movie)
     

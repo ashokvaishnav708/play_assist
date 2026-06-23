@@ -6,8 +6,9 @@ from typing import List
 
 
 class MovieRepository(BaseRepository):
-    def create_movie(self, movie_data: MovieCreateRequest):
-        new_movie = Movie(**movie_data.model_dump(exclude_none=True))
+    def create_movie(self, movie_data: MovieCreateRequest, embedding: List[float]):
+        
+        new_movie = Movie(embedding=embedding, **movie_data.model_dump(exclude_none=True))
 
         self._session.add(new_movie)
         self._session.commit()
