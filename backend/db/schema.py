@@ -4,19 +4,11 @@ from pgvector.sqlalchemy import Vector
 from db.database import Base
 
 
-class MovieVector(Base):
-    __tablename__ = "movie_vectors"
-
-    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    tmdb_id = Column(Integer, nullable=False)
-    embedding = Column(Vector(1536))
-
-
 class Movie(Base):
     __tablename__ = "movies"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    tmdb_id = Column(Integer)
+    tmdb_id = Column(Integer, nullable=False)
     title = Column(String, nullable=False)
     release_date = Column(String, nullable=False)
     poster_path = Column(String, nullable=True, default=None)
@@ -24,6 +16,7 @@ class Movie(Base):
     overview = Column(String, nullable=False)
     genre_ids = Column(ARRAY(Integer, dimensions=1), nullable=False)
     page = Column(Integer)
+    embedding = Column(Vector(1536))
 
 # TV Series will be implemented later
 # class TVSeries(Base):
