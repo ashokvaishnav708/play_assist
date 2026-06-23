@@ -8,15 +8,10 @@ from routes.movies import router as movies_router
 from routes.tv_shows import router as tv_shows_router
 from routes.ask_ai import router as ask_ai
 from routes.auth import router as auth_router
-from routes.movies import fetch_popular_movies_seeds, add_movies_to_db
 
 from models.user import UserResponse
 
-from rag.rag_chain import rag_chain
-from agent.movies import movie_store
-from agent.agent import movie_agent
-
-from db.database import init_db, get_db
+from db.database import init_db
 
 from utility.utils import get_env_key
 from utility.security.protect_route import get_current_user
@@ -44,12 +39,6 @@ DEBUG = True
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_db()
-    movies = await fetch_popular_movies_seeds()
-
-    # add_movies_to_db(movies, Depends(get_db))
-
-    rag_chain.build_rag_chain(movies)
-    movie_store.add_movies(movies)
     yield
 
 
