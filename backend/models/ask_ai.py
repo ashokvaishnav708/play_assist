@@ -1,7 +1,7 @@
 from typing import List
 from pydantic import BaseModel
 
-from backend.models.movie import MovieCreateRequest
+from models.movie import MovieCreateRequest
 
 class QueryRequest(BaseModel):
     question: str

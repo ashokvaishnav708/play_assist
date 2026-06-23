@@ -1,5 +1,5 @@
 from .base import BaseRepository
-from db.models import User
+from db.schema import User
 from models.user import UserCreateRequest
 
 
