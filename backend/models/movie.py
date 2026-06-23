@@ -10,6 +10,13 @@ class MovieCreateRequest(BaseModel):
     original_language: str
     overview: str
     genre_ids: List[int]
+    page: int
+
+class MoviesPageRequest(BaseModel):
+    page: int
+
+class LoadMoviesRequest(BaseModel):
+    pages: int
 
 
 class MoviesResponse(BaseModel):
