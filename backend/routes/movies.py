@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Query, Depends
+from fastapi import APIRouter, Query, Depends, status
 from typing import List
 import httpx
 import logging
@@ -55,24 +55,21 @@ async def fetch_latest_popular_movies(page: int = 1) -> List[Movie]:
     return movies
 
 
-@router.get("/load_movies", response_model=Movies)
-async def load_movies(request: LoadMoviesRequest, session: Session = Depends(get_db)) -> Movies:
+@router.get("/load_movies", status_code=status.HTTP_200_OK)
+async def load_movies(request_body: LoadMoviesRequest, session: Session = Depends(get_db)) -> Movies:
     """
     Fetch popular movies from TMDB server and load them into database.
     """
     logger.debug("load popular movies endpoint invoked")
     movie_service = MovieService(session)
-    for page in range(request.pages):
+    for page in range(request_body.pages):
         popular_movies = await fetch_latest_popular_movies(page)
 
     movie_service.add_movies(popular_movies)
 
-    return Movies(movies=popular_movies)
-
-
 @router.get("/movies", response_model=Movies)
-async def movies_by_page(query: MoviesPageRequest, session: Session = Depends(get_db)) -> Movies:
-    page = query.page
+async def movies_by_page(request_body: MoviesPageRequest, session: Session = Depends(get_db)) -> Movies:
+    page = request_body.page
     logger.debug(f"Movies requested for page {page}")
 
     movie_service = MovieService(session)
