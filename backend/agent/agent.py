@@ -4,7 +4,7 @@ from langchain_core.messages import SystemMessage, HumanMessage
 from dotenv import load_dotenv, find_dotenv, get_key
 
 from models.movie import MovieCreateRequest as Movie
-from agent.movies import movie_store
+from agent.movie_store_mock import movie_store
 
 from logging import getLogger
 logger = getLogger(__name__)
@@ -36,7 +36,7 @@ SYSTEM_MESSAGE = SystemMessage(content="""You are a helpful assistant for movies
 
 class MovieAgent:
     def __init__(self, gemini_api_key: str):
-        self.__llm = ChatGoogleGenerativeAI(model="gemini-3-flash-preview", google_api_key=gemini_api_key, temperature=0.3)
+        self.__llm = ChatGoogleGenerativeAI(model="gemini-3-flash-preview", google_api_key=gemini_api_key, temperature=0.1)
         self.__agent = create_agent(
             model=self.__llm,
             tools=[get_movies_via_genre],
@@ -56,7 +56,7 @@ class MovieAgent:
 
 env_path = find_dotenv()
 load_dotenv(env_path, override=True)
-GOOGLE_API_KEY = get_key(env_path, "GEMINI_API_KEY")
+GEMINI_API_KEY = get_key(env_path, "GEMINI_API_KEY")
 
-movie_agent = MovieAgent(gemini_api_key=GOOGLE_API_KEY)
+movie_agent = MovieAgent(gemini_api_key=GEMINI_API_KEY)
 

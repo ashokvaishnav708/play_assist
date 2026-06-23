@@ -1,7 +1,8 @@
 from .base import BaseRepository
-from db.models import Movie
+from db.schema import Movie
 from models.movie import MovieCreateRequest
-from sqlalchemy.orm import Query
+
+from typing import List
 
 
 class MovieRepository(BaseRepository):
@@ -18,10 +19,18 @@ class MovieRepository(BaseRepository):
         movie = self._session.query(Movie).filter_by(tmdb_id=tmdb_id).first()
         return bool(movie)
     
-    def get_movie_by_tmdb_id(self, tmdb_id: str) -> Query[Movie]:
-        movie = self._session.query(Movie).filter_by(tmdb_id=tmdb_id)
-        return movie
+    def get_movie_by_tmdb_id(self, tmdb_id: str) -> List[Movie]:
+        movies = self._session.query(Movie).filter_by(tmdb_id=tmdb_id).all()
+        return movies
     
     def get_movie_by_id(self, id: int) -> Movie | None:
         movie = self._session.query(Movie).filter_by(id=id).first()
         return movie
+    
+    def get_movies_by_page(self, page: int) -> List[Movie]:
+        movies = self._session.query(Movie).filter_by(page=page).all()
+        return movies
+    
+    def search_movie_by_keyword(self, keyword: str) -> List[Movie]:
+        movies = self._session.query(Movie).filter(Movie.title.ilike(f'%{keyword}%')).all()
+        return movies
