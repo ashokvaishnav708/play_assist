@@ -1,13 +1,14 @@
 from sqlalchemy import Column, Integer, String, DateTime
-from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy.dialects.postgresql import ARRAY, UUID
 from pgvector.sqlalchemy import Vector
 from db.database import Base
+import uuid
 
 
 class Movie(Base):
     __tablename__ = "movies"
 
-    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
     tmdb_id = Column(Integer, nullable=False)
     title = Column(String, nullable=False)
     release_date = Column(String, nullable=False)
@@ -36,11 +37,11 @@ class Movie(Base):
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
     first_name = Column(String(50))
     last_name = Column(String(50))
     email = Column(String(70), unique=True)
     password = Column(String(250))
     created_at = Column(DateTime)
     favorite_movies = Column(ARRAY(Integer, dimensions=1), nullable=False)
-    favorites_tv_series = Column(ARRAY(Integer, dimensions=1), nullable=False)
+    # favorites_tv_series = Column(ARRAY(Integer, dimensions=1), nullable=False)
