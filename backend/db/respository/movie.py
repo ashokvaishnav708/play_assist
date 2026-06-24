@@ -28,9 +28,9 @@ class MovieRepository(BaseRepository):
         movie = self._session.query(Movie).filter_by(id=id).first()
         return movie
     
-    def get_movies_by_page(self, page: int) -> List[Movie]:
-        movies = self._session.query(Movie).filter_by(page=page).all()
-        return movies
+    # def get_movies_by_range(self, min: int, max: int) -> List[Movie]:
+    #     movies = self._session.query(Movie).filter().filter_by(page=page).all()
+    #     return movies
     
     def search_movie_by_keyword(self, keyword: str) -> List[Movie]:
         movies = self._session.query(Movie).filter(Movie.title.ilike(f'%{keyword}%')).all()

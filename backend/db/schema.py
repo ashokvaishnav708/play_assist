@@ -16,7 +16,6 @@ class Movie(Base):
     original_language = Column(String, nullable=False)
     overview = Column(String, nullable=False)
     genre_ids = Column(ARRAY(Integer, dimensions=1), nullable=False)
-    page = Column(Integer)
     embedding = Column(Vector(1536))
 
 # TV Series will be implemented later

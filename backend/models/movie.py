@@ -3,6 +3,15 @@ from pydantic import BaseModel
 
 class MovieCreateRequest(BaseModel):
     id: int
+    title: str
+    release_date: str
+    poster_path: str | None
+    original_language: str
+    overview: str
+    genre_ids: List[int]
+
+class MovieResponse(BaseModel):
+    id: str
     tmdb_id: int
     title: str
     release_date: str
@@ -10,7 +19,6 @@ class MovieCreateRequest(BaseModel):
     original_language: str
     overview: str
     genre_ids: List[int]
-    page: int
 
 class MoviesPageRequest(BaseModel):
     page: int
@@ -20,4 +28,4 @@ class LoadMoviesRequest(BaseModel):
 
 
 class MoviesResponse(BaseModel):
-    movies: List[MovieCreateRequest]
+    movies: List[MovieResponse]
