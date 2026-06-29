@@ -65,3 +65,14 @@ export async function signupUser(email: string, password: string, firstName: str
     
     return await response.json();
 }
+
+
+export async function fetchLatestMovies() {
+    const response = await fetch(`${API_BASE_URL}/movies/load_movies`);
+    if (!response.ok) {
+        throw Error("Failed to load movies.");
+    }
+
+    const data = await response.json();
+    return data.movies;
+}
