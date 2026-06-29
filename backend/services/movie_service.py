@@ -9,14 +9,13 @@ from typing import List
 MOVIES_PER_PAGE = 40
 
 class MovieService:
-    def __int__(self, session: Session):
+    def __init__(self, session: Session):
         self.__movie_repo = MovieRepository(session=session)
         self.__embedding_model = get_embedding_model()
 
-    def movie_to_text(movie: MovieCreateRequest) -> str:
+    def movie_to_text(self, movie: MovieCreateRequest) -> str:
         return f"""
         Title: {movie.title}
-        Poster: {movie.poster_path}
         Overview: {movie.overview}
         Release Date: {movie.release_date}
         Original Language: {movie.original_language}
@@ -24,7 +23,7 @@ class MovieService:
         """.strip()
 
     def add_movie(self, movie: MovieCreateRequest) -> MovieResponse:
-        if self.__movie_repo.get_movie_by_tmdb_id(movie.tmdb_id):
+        if self.__movie_repo.get_movie_by_tmdb_id(movie.id):
             raise HTTPException(status_code=400, detail="Movie already exists. Skipping...")
 
         movie_text = self.movie_to_text(movie)
@@ -46,14 +45,24 @@ class MovieService:
         raise HTTPException(status_code=400, detail=f"Movie is not avaialbale with {movie_id}.")
     
     def get_movies_by_page(self, page: int) -> List[MovieResponse]:
-        min = MOVIES_PER_PAGE + 1
-        max = MOVIES_PER_PAGE * page
+        offset = (page - 1) * MOVIES_PER_PAGE
+        limit = MOVIES_PER_PAGE
 
-        movies = self.__movie_repo.get_movies_by_range(min, max)
+        movies = self.__movie_repo.get_movies_by_range(offset=offset, limit=limit)
         movies_response = [MovieResponse(**movie) for movie in movies]
         return movies_response
     
     def search_movies(self, keyword: str) -> List[MovieResponse]:
         movies = self.__movie_repo.search_movie_by_keyword(keyword=keyword)
+        movies_response = [MovieResponse(**movie) for movie in movies]
+        return movies_response
+    
+    def get_movies_by_genres(self, genres: List[int]) -> List[MovieResponse]:
+        movies = self.__movie_repo.get_movies_by_genres(genres)
+        movies_response = [MovieResponse(**movie) for movie in movies]
+        return movies_response
+    
+    def get_all_movies(self) ->List[MovieResponse]:
+        movies = self.__movie_repo.get_all_movies()
         movies_response = [MovieResponse(**movie) for movie in movies]
         return movies_response

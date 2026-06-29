@@ -54,26 +54,24 @@ async def fetch_latest_popular_movies(page: int = 1) -> List[MovieCreateRequest]
     return movies
 
 
-@router.get("/load_movies", status_code=status.HTTP_200_OK)
-async def load_movies(request_body: LoadMoviesRequest, session: Session = Depends(get_db)) -> MoviesResponse:
+@router.get("/load_movies", response_model=MoviesResponse)
+async def load_movies(pages: int = Query(1, ge=1), session: Session = Depends(get_db)) -> MoviesResponse:
     """
     Fetch popular movies from TMDB server and load them into database.
     """
-    logger.debug("load popular movies endpoint invoked")
+    logger.debug(f"load popular movies endpoint invoked with pages={pages}")
     movie_service = MovieService(session)
-    for page in range(request_body.pages):
+    for page in range(1, pages + 1):
         popular_movies = await fetch_latest_popular_movies(page)
         movie_service.add_movies(popular_movies)
 
+    return MoviesResponse(movies=movie_service.get_movies_by_page(1))
 
 @router.get("/movies", response_model=MoviesResponse)
-async def movies_by_page(request_body: MoviesPageRequest, session: Session = Depends(get_db)) -> MoviesResponse:
-    page = request_body.page
+async def movies_by_page(page: int = Query(1, ge=1), session: Session = Depends(get_db)) -> MoviesResponse:
     logger.debug(f"Movies requested for page {page}")
-
     movie_service = MovieService(session)
     movies = movie_service.get_movies_by_page(page)
-
     return MoviesResponse(movies=movies)
 
 @router.get("/search", response_model=MoviesResponse)
