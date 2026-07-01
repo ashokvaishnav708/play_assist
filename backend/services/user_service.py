@@ -39,3 +39,10 @@ class UserService:
         if user:
             return UserResponse(**user)
         raise HTTPException(status_code=400, detail="User is not avaialbale.")
+    
+    def get_user(self) -> UserResponse:
+        user = self.__user_repo.get_user()
+
+        if user:
+            return UserResponse(**user)
+        raise HTTPException(status_code=400, detail="User not found.")
