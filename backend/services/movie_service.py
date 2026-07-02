@@ -23,7 +23,7 @@ class MovieService:
         """.strip()
 
     def add_movie(self, movie: MovieCreateRequest) -> MovieResponse:
-        if self.__movie_repo.get_movie_by_tmdb_id(movie.id):
+        if self.__movie_repo.get_movie_by_tmdb_id(movie.tmdb_id):
             raise HTTPException(status_code=400, detail="Movie already exists. Skipping...")
 
         movie_text = self.movie_to_text(movie)
@@ -31,7 +31,7 @@ class MovieService:
 
         movie = self.__movie_repo.create_movie(movie, embedding)
 
-        return MovieResponse(**movie)
+        return MovieResponse(**movie.__dict__)
     
     def add_movies(self, movies: List[MovieCreateRequest]):
         for movie in movies:
@@ -41,7 +41,7 @@ class MovieService:
         movie = self.__movie_repo.get_movie_by_id(id=movie_id)
 
         if movie:
-            return MovieResponse(**movie)
+            return MovieResponse(**movie.__dict__)
         raise HTTPException(status_code=400, detail=f"Movie is not avaialbale with {movie_id}.")
     
     def get_movies_by_page(self, page: int) -> List[MovieResponse]:
@@ -49,20 +49,20 @@ class MovieService:
         limit = MOVIES_PER_PAGE
 
         movies = self.__movie_repo.get_movies_by_range(offset=offset, limit=limit)
-        movies_response = [MovieResponse(**movie) for movie in movies]
+        movies_response = [MovieResponse(**movie.__dict__) for movie in movies]
         return movies_response
     
     def search_movies(self, keyword: str) -> List[MovieResponse]:
         movies = self.__movie_repo.search_movie_by_keyword(keyword=keyword)
-        movies_response = [MovieResponse(**movie) for movie in movies]
+        movies_response = [MovieResponse(**movie.__dict__) for movie in movies]
         return movies_response
     
-    def get_movies_by_genres(self, genres: List[int]) -> List[MovieResponse]:
-        movies = self.__movie_repo.get_movies_by_genres(genres)
-        movies_response = [MovieResponse(**movie) for movie in movies]
+    def similarity_search(self, query_embeddings: List[float]) -> List[MovieResponse]:
+        movies = self.__movie_repo.similarity_search(query_embeddings)
+        movies_response = [MovieResponse(**movie.__dict__) for movie in movies]
         return movies_response
     
     def get_all_movies(self) ->List[MovieResponse]:
         movies = self.__movie_repo.get_all_movies()
-        movies_response = [MovieResponse(**movie) for movie in movies]
+        movies_response = [MovieResponse(**movie.__dict__) for movie in movies]
         return movies_response
