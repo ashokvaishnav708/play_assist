@@ -16,7 +16,7 @@ class Movie(Base):
     original_language = Column(String, nullable=False)
     overview = Column(String, nullable=False)
     genre_ids = Column(ARRAY(Integer, dimensions=1), nullable=False)
-    embedding = Column(Vector(1536))
+    embedding = Column(Vector(3072))
 
 # TV Series will be implemented later
 # class TVSeries(Base):
@@ -42,5 +42,5 @@ class User(Base):
     email = Column(String(70), unique=True)
     password = Column(String(250))
     created_at = Column(DateTime)
-    favorite_movies = Column(ARRAY(Integer, dimensions=1), nullable=False)
-    # favorites_tv_series = Column(ARRAY(Integer, dimensions=1), nullable=False)
+    favorite_movies = Column(ARRAY(UUID(as_uuid=True), dimensions=1), nullable=False)
+    # favorites_tv_series = Column(ARRAY(UUID(as_uuid=True), dimensions=1), nullable=False)
