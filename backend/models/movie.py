@@ -1,7 +1,8 @@
 from typing import List
 from pydantic import BaseModel
+from uuid import UUID
 
-class MovieCreateRequest(BaseModel):
+class TMDBResponse(BaseModel):
     id: int
     title: str
     release_date: str
@@ -10,8 +11,17 @@ class MovieCreateRequest(BaseModel):
     overview: str
     genre_ids: List[int]
 
+class MovieCreateRequest(BaseModel):
+    tmdb_id: int
+    title: str
+    release_date: str
+    poster_path: str | None
+    original_language: str
+    overview: str
+    genre_ids: List[int]
+
 class MovieResponse(BaseModel):
-    id: str
+    id: UUID
     tmdb_id: int
     title: str
     release_date: str

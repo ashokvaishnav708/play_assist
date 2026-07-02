@@ -6,6 +6,9 @@ from ai.llm import get_embedding_model
 
 from typing import List
 
+import logging
+logger = logging.getLogger(__name__)
+
 MOVIES_PER_PAGE = 40
 
 class MovieService:
@@ -35,7 +38,11 @@ class MovieService:
     
     def add_movies(self, movies: List[MovieCreateRequest]):
         for movie in movies:
-            self.add_movie(movie)
+            try:
+                self.add_movie(movie)
+            except Exception as e:
+                logger.error(f"{e}")
+
     
     def get_movie_by_id(self, movie_id: int) -> MovieResponse:
         movie = self.__movie_repo.get_movie_by_id(id=movie_id)

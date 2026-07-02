@@ -5,7 +5,7 @@ import logging
 
 from sqlalchemy.orm import Session
 
-from models.movie import MovieCreateRequest, MoviesResponse, MoviesPageRequest, LoadMoviesRequest
+from models.movie import MovieCreateRequest, MoviesResponse, TMDBResponse
 from services.movie_service import MovieService
 
 from db.database import get_db
@@ -22,7 +22,8 @@ POSTER_BASE_URL  ="https://image.tmdb.org/t/p/w220_and_h330_face"
 TMDB_API_KEY = get_env_key("TMDB_API_KEY")
 MOVIES_LANGUAGE = get_env_key("MOVIES_LANGUAGE")
 
-def add_poster_url(movie: MovieCreateRequest) -> MovieCreateRequest:
+def add_poster_url(movie: TMDBResponse) -> TMDBResponse:
+    movie
     if movie.poster_path is None:
         return movie
     else:
@@ -34,7 +35,7 @@ async def fetch_latest_popular_movies(page: int = 1) -> List[MovieCreateRequest]
     url = f"{BASE_URL}/movie/popular"
     params = {
             "api_key": TMDB_API_KEY,
-            "language": "en-US" if MOVIES_LANGUAGE is None else MOVIES_LANGUAGE,
+            # "language": "en-US" if MOVIES_LANGUAGE is None else MOVIES_LANGUAGE,
             "page": page
         }
     movies: List[MovieCreateRequest] = []
@@ -43,7 +44,8 @@ async def fetch_latest_popular_movies(page: int = 1) -> List[MovieCreateRequest]
         try:
             response = await client.get(url, params=params)
             fetched_movies: List = response.json()["results"]
-            movies = [add_poster_url(MovieCreateRequest(**movie)) for movie in fetched_movies]
+            tmdb_movies = [add_poster_url(TMDBResponse(**movie)) for movie in fetched_movies]
+            movies = [MovieCreateRequest(**movie.model_dump(), tmdb_id=movie.id) for movie in tmdb_movies]
 
         except httpx.RequestError as e:
             raise logger.error(f"HTTP Request Error: {e}")

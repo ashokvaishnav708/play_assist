@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-
+from uuid import UUID
 from typing import Union, List
 
 class UserCreateRequest(BaseModel):
@@ -7,9 +7,10 @@ class UserCreateRequest(BaseModel):
     last_name: str
     email: str
     password: str
+    favorite_movies: List[str]
 
 class UserResponse(UserCreateRequest):
-    id: int
+    id: UUID
     first_name: str
     last_name: str
     email: str
@@ -17,7 +18,7 @@ class UserResponse(UserCreateRequest):
     favorite_movies: List[str]
 
 class UserUpdateRequest(BaseModel):
-    id: int
+    id: UUID
     first_name: Union[str, None] = None
     last_name: Union[str, None] = None
     email: Union[str, None] = None
