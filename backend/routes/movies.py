@@ -35,7 +35,7 @@ async def fetch_latest_popular_movies(page: int = 1) -> List[MovieCreateRequest]
     url = f"{BASE_URL}/movie/popular"
     params = {
             "api_key": TMDB_API_KEY,
-            # "language": "en-US" if MOVIES_LANGUAGE is None else MOVIES_LANGUAGE,
+            "language": "en-US" if MOVIES_LANGUAGE is None else MOVIES_LANGUAGE,
             "page": page
         }
     movies: List[MovieCreateRequest] = []
@@ -57,7 +57,7 @@ async def fetch_latest_popular_movies(page: int = 1) -> List[MovieCreateRequest]
 
 
 @router.get("/load_movies", response_model=MoviesResponse)
-async def load_movies(pages: int = Query(1, ge=1), session: Session = Depends(get_db)) -> MoviesResponse:
+async def load_movies(pages: int = Query(15, ge=1), session: Session = Depends(get_db)) -> MoviesResponse:
     """
     Fetch popular movies from TMDB server and load them into database.
     """

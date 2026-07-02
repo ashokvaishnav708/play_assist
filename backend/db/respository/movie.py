@@ -21,8 +21,8 @@ class MovieRepository(BaseRepository):
         return bool(movie)
     
     def get_movie_by_tmdb_id(self, tmdb_id: str) -> List[Movie]:
-        movies = self._session.query(Movie).filter_by(tmdb_id=tmdb_id).all()
-        return movies
+        movie = self._session.query(Movie).filter_by(tmdb_id=tmdb_id).first()
+        return movie
     
     def get_movie_by_id(self, id: int) -> Movie | None:
         movie = self._session.query(Movie).filter_by(id=id).first()
@@ -32,6 +32,6 @@ class MovieRepository(BaseRepository):
         movies = self._session.query(Movie).order_by(Movie.id).offset(offset).limit(limit).all()
         return movies
     
-    def search_movie_by_keyword(self, keyword: str) -> List[Movie]:
-        movies = self._session.query(Movie).filter(Movie.title.ilike(f'%{keyword}%')).all()
+    def similarity_search(self, query_embedding: List[float], limit: int = 20) -> List[Movie]:
+        movies = self._session.query(Movie).order_by(Movie.embedding.cosine_distance(query_embedding)).limit(limit).all()
         return movies
