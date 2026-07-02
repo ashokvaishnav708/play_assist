@@ -92,7 +92,7 @@ function Home() {
                     <h2 className='text-2xl font-bold text-white mb-6'>
                         {searchQuery ? `Results for "${searchQuery}"` : 'Popular Movies'}
                     </h2>
-                    {/* <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
+                    <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
                         {loading && movies.length === 0 ? (
                             <div className='col-span-full text-center text-gray-400 py-12'>
                                 <p className='text-xl'>Loading movies...</p>
@@ -104,7 +104,7 @@ function Home() {
                                 <p className='text-xl'>No movies found</p>
                             </div>
                         )}
-                    </div> */}
+                    </div>
                 </div>
             </div>
         </div>
