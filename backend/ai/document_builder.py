@@ -1,5 +1,5 @@
 from langchain_core.documents import Document
-from models.movies import Movie
+from models.movie import MovieCreateRequest as Movie
 from typing import List
 
 def movie_to_document(movie: Movie) -> Document:

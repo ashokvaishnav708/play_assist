@@ -1,15 +1,14 @@
-from fastapi import APIRouter, Query, Depends
+from fastapi import APIRouter, Query, Depends, status
 from typing import List
 import httpx
-from urllib.parse import quote
-import time
 import logging
 
 from sqlalchemy.orm import Session
 
-from models.movies import Movie, Movies
+from models.movie import MovieCreateRequest, MoviesResponse, TMDBResponse
+from services.movie_service import MovieService
 
-from db.models import Movie as DBMovie
+from db.database import get_db
 
 from utility.utils import get_env_key
 
@@ -20,85 +19,68 @@ router = APIRouter()
 BASE_URL = "https://api.themoviedb.org/3"
 POSTER_BASE_URL  ="https://image.tmdb.org/t/p/w220_and_h330_face"
 
-API_KEY = get_env_key("TMDB_API_KEY")
+TMDB_API_KEY = get_env_key("TMDB_API_KEY")
+MOVIES_LANGUAGE = get_env_key("MOVIES_LANGUAGE")
 
-def add_poster_url(movie: Movie) -> Movie:
+def add_poster_url(movie: TMDBResponse) -> TMDBResponse:
+    movie
     if movie.poster_path is None:
         return movie
     else:
         movie.poster_path = f'{POSTER_BASE_URL}/{movie.poster_path}'
         return movie
-    
-async def fetch_movies(url: str) -> List[Movies]:
-    async with httpx.AsyncClient() as client:
-        response = await client.get(url)
-        fetched_movies: List = response.json()["results"]
-        movies = [add_poster_url(Movie(**movie)) for movie in fetched_movies]
-        return movies
 
-async def fetch_popular_movies_seeds(pages: int = 10) -> List[Movies]:
-    all_movies: List[Movie] = []
+    
+async def fetch_latest_popular_movies(page: int = 1) -> List[MovieCreateRequest]:
     url = f"{BASE_URL}/movie/popular"
-    client = httpx.AsyncClient()
-    for page in range(1, pages):
-        params = {
-            "api_key": API_KEY,
-            "language": "en-US",
+    params = {
+            "api_key": TMDB_API_KEY,
+            "language": "en-US" if MOVIES_LANGUAGE is None else MOVIES_LANGUAGE,
             "page": page
         }
+    movies: List[MovieCreateRequest] = []
 
+    async with httpx.AsyncClient() as client:
         try:
-            resposne = await client.get(url, params=params)
+            response = await client.get(url, params=params)
+            fetched_movies: List = response.json()["results"]
+            tmdb_movies = [add_poster_url(TMDBResponse(**movie)) for movie in fetched_movies]
+            movies = [MovieCreateRequest(**movie.model_dump(), tmdb_id=movie.id) for movie in tmdb_movies]
 
-            if resposne.status_code == 200:
-                data = resposne.json()
-                fetched_movies = data["results"]
-                movies = [add_poster_url(Movie(**movie)) for movie in fetched_movies]
-                all_movies.extend(movies)
-            elif resposne.status_code == 429:
-                # Too many requests need to wait
-                retry_after = int(resposne.headers.get("Retry-After", 2))
-                logger.warning(f"Rate limit hit on page {page}. Sleeping for {retry_after} seconds...")
-                time.sleep(retry_after)
-
-                page -= 1
-                continue
-            else:
-                logger.error(f"Failed on page {page} with status code {resposne.status_code}")
-                break
-    
         except httpx.RequestError as e:
-            logger.error(f"Error fetching seeds due to {e}")
-            break
+            raise logger.error(f"HTTP Request Error: {e}")
+
+        except Exception as e:
+            logger.error(f"Error fetching latest popluar movies : {e}")
+
+    return movies
+
+
+@router.get("/load_movies", response_model=MoviesResponse)
+async def load_movies(pages: int = Query(15, ge=1), session: Session = Depends(get_db)) -> MoviesResponse:
+    """
+    Fetch popular movies from TMDB server and load them into database.
+    """
+    logger.debug(f"load popular movies endpoint invoked with pages={pages}")
+    movie_service = MovieService(session)
+    for page in range(1, pages + 1):
+        popular_movies = await fetch_latest_popular_movies(page)
+        movie_service.add_movies(popular_movies)
+
+    return MoviesResponse(movies=movie_service.get_movies_by_page(1))
+
+@router.get("/movies", response_model=MoviesResponse)
+async def movies_by_page(page: int = Query(1, ge=1), session: Session = Depends(get_db)) -> MoviesResponse:
+    logger.debug(f"Movies requested for page {page}")
+    movie_service = MovieService(session)
+    movies = movie_service.get_movies_by_page(page)
+    return MoviesResponse(movies=movies)
+
+@router.get("/search", response_model=MoviesResponse)
+async def search_movie(query: str = Query(...), session: Session = Depends(get_db)) -> MoviesResponse:
+    logger.debug(f"Search movies endpoint invoked with query: {query}")
     
-    return all_movies
-
-def add_movies_to_db(movies: List[Movie], db: Session):
-    for movie in movies:
-        db_movie = DBMovie(
-            tmdb_id=movie.id, 
-            title=movie.title,
-            release_date=movie.release_date,
-            poster_path=movie.poster_path,
-            original_language=movie.original_language,
-            overview=movie.overview,
-            genre_ids=movie.genre_ids
-            )
-        db.add(db_movie)
-        db.commit()
-        db.refresh(db_movie)
-
-
-@router.get("/popular", response_model=Movies)
-async def popular_movies() -> Movies:
-    logger.info("Popular movies endpoint invoked")
-    popular_movies_url = f"{BASE_URL}/movie/popular?api_key={API_KEY}"
-    popular_movies = await fetch_movies(popular_movies_url)
-    return Movies(movies=popular_movies)
-
-@router.get("/search", response_model=Movies)
-async def search_movie(query: str = Query(...)) -> Movies:
-    logger.info(f"Search movies endpoint invoked with query: {query}")
-    search_url = f"{BASE_URL}/search/movie?api_key={API_KEY}&query={quote(query)}"
-    search_result = await fetch_movies(search_url)
-    return Movies(movies=search_result)
+    movie_service = MovieService(session)
+    movies = movie_service.search_movies(query)
+    return movies
+    

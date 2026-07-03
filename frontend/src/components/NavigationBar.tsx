@@ -19,6 +19,9 @@ function NavigationBar() {
                 <Link to='/favorites' className="px-4 py-2 rounded-lg text-gray-300 font-medium transition-all duration-200 hover:bg-gray-800/50 hover:text-white">
                     ❤️ Favorites
                 </Link>
+                <Link to='/settings' className="px-4 py-2 rounded-lg text-gray-300 font-medium transition-all duration-200 hover:bg-gray-800/50 hover:text-white">
+                    Settings
+                </Link>
                 <Link to='/ask_ai' className="px-4 py-2 rounded-lg text-gray-300 font-medium transition-all duration-200 hover:bg-gray-800/50 hover:text-white">
                     🤖 Ask AI
                 </Link>

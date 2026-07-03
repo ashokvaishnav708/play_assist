@@ -1,11 +1,14 @@
 from .base import BaseRepository
-from db.models import User
+from db.schema import User
 from models.user import UserCreateRequest
 
 
 class UserRepository(BaseRepository):
     def create_user(self, user_data: UserCreateRequest):
         new_user = User(**user_data.model_dump(exclude_none=True))
+
+        if self.user_exist_by_email(user_data.email):
+            raise Exception("User already exists. Skipping...")
 
         self._session.add(new_user)
         self._session.commit()
@@ -23,4 +26,8 @@ class UserRepository(BaseRepository):
     
     def get_user_by_id(self, id: int) -> User | None:
         user = self._session.query(User).filter_by(id=id).first()
+        return user
+    
+    def get_user(self) -> User | None:
+        user = self._session.query(User).first()
         return user

@@ -4,6 +4,7 @@ import { Route, Routes } from 'react-router';
 import NavigationBar from './components/NavigationBar';
 import AI from './pages/AI';
 import AuthForm from './pages/AuthForm';
+import Settings from './pages/Settings';
 import { MovieProvider } from './contexts/MovieContext';
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
             <Route path='/favorites' element={<Favorites />} />
             <Route path='/ask_ai' element={<AI />} />
             <Route path='/auth_form' element={ <AuthForm /> } />
+            <Route path='/settings' element={ <Settings /> } />
           </Routes>
         </main>
       </div>

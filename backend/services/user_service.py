@@ -6,7 +6,7 @@ from utility.security.hash_helper import HashHelper
 from utility.security.auth_handler import AuthHandler
 
 class UserService:
-    def __int__(self, session: Session):
+    def __init__(self, session: Session):
         self.__user_repo = UserRepository(session=session)
 
     def signup(self, user_data: UserCreateRequest) -> UserResponse:
@@ -18,7 +18,7 @@ class UserService:
 
         user = self.__user_repo.create_user(user_data=user_data)
 
-        return UserResponse(**user)
+        return UserResponse.model_validate(user.__dict__)
     
     def login(self, login_details: UserLoginRequest) -> UserWithToken:
         if not self.__user_repo.get_user_by_email(login_details.email):
@@ -37,5 +37,12 @@ class UserService:
         user = self.__user_repo.get_user_by_id(user_id=user_id)
 
         if user:
-            return UserResponse(**user)
-        raise HTTPException(status_code=400, detail="User is not avaialbale.")
+            return UserResponse.model_validate(user.__dict__)
+        raise HTTPException(status_code=400, detail="User is not available.")
+    
+    def get_user(self) -> UserResponse:
+        user = self.__user_repo.get_user()
+
+        if user:
+            return UserResponse.model_validate(user.__dict__)
+        raise HTTPException(status_code=400, detail="User not found.")

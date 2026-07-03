@@ -1,5 +1,6 @@
 from sqlalchemy import create_engine, text
-from sqlalchemy.orm import declarative_base, sessionmaker, Session
+from sqlalchemy.orm import declarative_base, sessionmaker
+from db.db_seeds import execute_seeds
 
 from utility.utils import get_env_key
 
@@ -18,6 +19,9 @@ def init_db():
         conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
         conn.commit()
     create_tables()
+    db = SessionLocal() 
+    execute_seeds(db)
+    db.close()
     
 
 def get_db():
