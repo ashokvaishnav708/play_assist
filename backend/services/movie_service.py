@@ -1,5 +1,5 @@
 from db.respository.movie import MovieRepository
-from models.movie import MovieCreateRequest, MovieResponse
+from models.movie import MovieCreateRequest, MovieResponse, TMDBResponse
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from ai.llm import get_embedding_model
@@ -12,31 +12,55 @@ logger = logging.getLogger(__name__)
 MOVIES_PER_PAGE = 40
 
 class MovieService:
+    __GENRE_ID_TO_TYPE_MAP = {
+        28: "action", 12: "adventure", 16: "animation", 35: "comedy",
+        80: "crime", 99: "documentary", 18: "drama", 10751: "family",
+        14: "fantasy", 26: "history", 27: "horror", 10402: "music",
+        9648: "mystery", 10749: "romance", 878: "science-fiction", 10770: "tv-movie",
+        53: "thriller", 10752: "war", 37: "western",
+    }
     def __init__(self, session: Session):
         self.__movie_repo = MovieRepository(session=session)
         self.__embedding_model = get_embedding_model()
 
-    def movie_to_text(self, movie: MovieCreateRequest) -> str:
+    def __get_genre_types_to_text(self, genre_types: List[str]) -> str:
+        return ", ".join(genre_types)
+    
+    def __movie_to_text(self, movie: MovieCreateRequest) -> str:
         return f"""
         Title: {movie.title}
         Overview: {movie.overview}
         Release Date: {movie.release_date}
         Original Language: {movie.original_language}
-        Genre: {movie.genre_ids}
+        Genre: {self.__get_genre_types_to_text(movie.genre_types)}
         """.strip()
+    
+    def __get_genre_ids_to_type(self, genre_ids: List[int]) -> List[str]:
+        genre_types: List[str] = []
+        for id in genre_ids:
+            genre_type = self.__GENRE_ID_TO_TYPE_MAP.get(id)
+            if genre_type != None:
+                genre_types.append(genre_type)
 
-    def add_movie(self, movie: MovieCreateRequest) -> MovieResponse:
-        if self.__movie_repo.get_movie_by_tmdb_id(movie.tmdb_id):
+        return genre_types
+
+    def add_movie(self, movie: TMDBResponse) -> MovieResponse:
+        ### movie.id refers to TMDB movie id
+        if self.__movie_repo.get_movie_by_tmdb_id(movie.id):
             raise HTTPException(status_code=400, detail="Movie already exists. Skipping...")
 
-        movie_text = self.movie_to_text(movie)
+        genre_types = self.__get_genre_ids_to_type(movie.genre_ids)
+
+        movie_to_create = MovieCreateRequest(movie.model_dump(), tmdb_id=movie.id, genre_types=genre_types)
+
+        movie_text = self.__movie_to_text(movie)
         embedding = self.__embedding_model.embed_query(movie_text)
 
-        movie = self.__movie_repo.create_movie(movie, embedding)
+        movie = self.__movie_repo.create_movie(movie_to_create, embedding)
 
         return MovieResponse(**movie.__dict__)
     
-    def add_movies(self, movies: List[MovieCreateRequest]):
+    def add_movies(self, movies: List[TMDBResponse]):
         for movie in movies:
             try:
                 self.add_movie(movie)
