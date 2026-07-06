@@ -5,7 +5,7 @@ import logging
 
 from sqlalchemy.orm import Session
 
-from models.movie import MovieCreateRequest, MoviesResponse, TMDBResponse
+from models.movie import MoviesResponse, TMDBResponse
 from services.movie_service import MovieService
 
 from db.database import get_db
@@ -31,21 +31,20 @@ def add_poster_url(movie: TMDBResponse) -> TMDBResponse:
         return movie
 
     
-async def fetch_latest_popular_movies(page: int = 1) -> List[MovieCreateRequest]:
+async def fetch_latest_popular_movies(page: int = 1) -> List[TMDBResponse]:
     url = f"{BASE_URL}/movie/popular"
     params = {
             "api_key": TMDB_API_KEY,
             "language": "en-US" if MOVIES_LANGUAGE is None else MOVIES_LANGUAGE,
             "page": page
         }
-    movies: List[MovieCreateRequest] = []
+    movies: List[TMDBResponse] = []
 
     async with httpx.AsyncClient() as client:
         try:
             response = await client.get(url, params=params)
             fetched_movies: List = response.json()["results"]
-            tmdb_movies = [add_poster_url(TMDBResponse(**movie)) for movie in fetched_movies]
-            movies = [MovieCreateRequest(**movie.model_dump(), tmdb_id=movie.id) for movie in tmdb_movies]
+            movies = [add_poster_url(TMDBResponse(**movie)) for movie in fetched_movies]
 
         except httpx.RequestError as e:
             raise logger.error(f"HTTP Request Error: {e}")

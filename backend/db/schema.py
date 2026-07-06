@@ -16,7 +16,7 @@ class Movie(Base):
     poster_path = Column(String, nullable=True, default=None)
     original_language = Column(String, nullable=False)
     overview = Column(String, nullable=False)
-    genre_ids = Column(ARRAY(Integer, dimensions=1), nullable=False)
+    genre_types = Column(ARRAY(String, dimensions=1), nullable=False)
     embedding = Column(Vector(3072))
 
 # TV Series will be implemented later

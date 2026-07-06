@@ -18,7 +18,7 @@ class MovieCreateRequest(BaseModel):
     poster_path: str | None
     original_language: str
     overview: str
-    genre_ids: List[int]
+    genre_types: List[str]
 
 class MovieResponse(BaseModel):
     id: UUID
@@ -28,7 +28,7 @@ class MovieResponse(BaseModel):
     poster_path: str | None
     original_language: str
     overview: str
-    genre_ids: List[int]
+    genre_types: List[str]
 
 class MoviesPageRequest(BaseModel):
     page: int
