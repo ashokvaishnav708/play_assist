@@ -51,6 +51,7 @@ class MovieService:
 
         genre_types = self.__get_genre_ids_to_type(movie.genre_ids)
 
+        ### Parse TMDB response to movie create request model type
         movie_to_create = MovieCreateRequest(movie.model_dump(), tmdb_id=movie.id, genre_types=genre_types)
 
         movie_text = self.__movie_to_text(movie)
@@ -80,11 +81,6 @@ class MovieService:
         limit = MOVIES_PER_PAGE
 
         movies = self.__movie_repo.get_movies_by_range(offset=offset, limit=limit)
-        movies_response = [MovieResponse(**movie.__dict__) for movie in movies]
-        return movies_response
-    
-    def search_movies(self, keyword: str) -> List[MovieResponse]:
-        movies = self.__movie_repo.search_movie_by_keyword(keyword=keyword)
         movies_response = [MovieResponse(**movie.__dict__) for movie in movies]
         return movies_response
     
