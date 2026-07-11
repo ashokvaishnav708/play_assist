@@ -1,4 +1,28 @@
 services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - play_assist_network
+    restart: unless-stopped
+ 
+  ollama-init:
+    image: curlimages/curl:latest
+    depends_on:
+      - ollama
+    networks:
+      - play_assist_network
+    entrypoint: >
+      sh -c "
+      sleep 5 &&
+      curl -s http://ollama:11434/api/pull -d '{\"name\": \"nomic-embed-text\"}' &&
+      echo 'Embedding model pulled.'
+      "
+    restart: "no"
   db:
     image: pgvector/pgvector:pg16
     container_name: pg_db
@@ -6,6 +30,8 @@ services:
       - "5432:5432"
     env_file:
       - .env
+    networks:
+      - play_assist_network
     volumes:
       - pgdata:/var/lib/postgresql/data
    
@@ -22,8 +48,11 @@ services:
       - .env
     environment:
       - PYTHONUNBUFFERED=1
+    networks:
+      - play_assist_network
     depends_on:
       - db
+      - ollama
 
   frontend:
     build:
@@ -37,7 +66,15 @@ services:
       - /app/node_modules
     environment:
       - CHOKIDAR_USEPOLLING=true
+    networks:
+      - play_assist_network
     depends_on:
       - backend
+
+networks:
+  play_assist_network:
+    driver: bridge
+
 volumes:
+  ollama_data:
   pgdata:
