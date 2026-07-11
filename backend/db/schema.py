@@ -4,6 +4,9 @@ from sqlalchemy.dialects.postgresql import ARRAY, UUID
 from pgvector.sqlalchemy import Vector
 from db.database import Base
 import uuid
+from utility.utils import get_env_key
+
+VECTOR_SIZE = int(get_env_key("VECTOR_SIZE"))
 
 
 class Movie(Base):
@@ -17,7 +20,7 @@ class Movie(Base):
     original_language = Column(String, nullable=False)
     overview = Column(String, nullable=False)
     genre_types = Column(ARRAY(String, dimensions=1), nullable=False)
-    embedding = Column(Vector(3072))
+    embedding = Column(Vector(VECTOR_SIZE))
 
 
 # TV Series will be implemented later
