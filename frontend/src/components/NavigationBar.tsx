@@ -16,14 +16,14 @@ function NavigationBar() {
                 <Link to='/' className="px-4 py-2 rounded-lg text-gray-300 font-medium transition-all duration-200 hover:bg-gray-800/50 hover:text-white">
                     Home
                 </Link>
-                <Link to='/favorites' className="px-4 py-2 rounded-lg text-gray-300 font-medium transition-all duration-200 hover:bg-gray-800/50 hover:text-white">
+                {/* <Link to='/favorites' className="px-4 py-2 rounded-lg text-gray-300 font-medium transition-all duration-200 hover:bg-gray-800/50 hover:text-white">
                     ❤️ Favorites
+                </Link> */}
+                <Link to='/ask_ai' className="px-4 py-2 rounded-lg text-gray-300 font-medium transition-all duration-200 hover:bg-gray-800/50 hover:text-white">
+                    🤖 Ask AI
                 </Link>
                 <Link to='/settings' className="px-4 py-2 rounded-lg text-gray-300 font-medium transition-all duration-200 hover:bg-gray-800/50 hover:text-white">
                     Settings
-                </Link>
-                <Link to='/ask_ai' className="px-4 py-2 rounded-lg text-gray-300 font-medium transition-all duration-200 hover:bg-gray-800/50 hover:text-white">
-                    🤖 Ask AI
                 </Link>
                 <Link to='/auth_form' className="px-4 py-2 ml-2 rounded-lg bg-linear-to-r from-red-600 to-red-500 text-white font-medium transition-all duration-200 hover:shadow-lg hover:shadow-red-500/50">
                     Login
