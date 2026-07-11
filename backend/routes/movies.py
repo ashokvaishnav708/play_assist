@@ -17,27 +17,23 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 BASE_URL = "https://api.themoviedb.org/3"
-POSTER_BASE_URL  ="https://image.tmdb.org/t/p/w220_and_h330_face"
+POSTER_BASE_URL = "https://image.tmdb.org/t/p/w220_and_h330_face"
 
 TMDB_API_KEY = get_env_key("TMDB_API_KEY")
-MOVIES_LANGUAGE = get_env_key("MOVIES_LANGUAGE")
+
 
 def add_poster_url(movie: TMDBResponse) -> TMDBResponse:
     movie
     if movie.poster_path is None:
         return movie
     else:
-        movie.poster_path = f'{POSTER_BASE_URL}/{movie.poster_path}'
+        movie.poster_path = f"{POSTER_BASE_URL}/{movie.poster_path}"
         return movie
 
-    
+
 async def fetch_latest_popular_movies(page: int = 1) -> List[TMDBResponse]:
     url = f"{BASE_URL}/movie/popular"
-    params = {
-            "api_key": TMDB_API_KEY,
-            "language": "en-US" if MOVIES_LANGUAGE is None else MOVIES_LANGUAGE,
-            "page": page
-        }
+    params = {"api_key": TMDB_API_KEY, "page": page}
     movies: List[TMDBResponse] = []
 
     async with httpx.AsyncClient() as client:
@@ -56,7 +52,9 @@ async def fetch_latest_popular_movies(page: int = 1) -> List[TMDBResponse]:
 
 
 @router.get("/load_movies", response_model=MoviesResponse)
-async def load_movies(pages: int = Query(15, ge=1), session: Session = Depends(get_db)) -> MoviesResponse:
+async def load_movies(
+    pages: int = Query(15, ge=1), session: Session = Depends(get_db)
+) -> MoviesResponse:
     """
     Fetch popular movies from TMDB server and load them into database.
     """
@@ -68,18 +66,23 @@ async def load_movies(pages: int = Query(15, ge=1), session: Session = Depends(g
 
     return MoviesResponse(movies=movie_service.get_movies_by_page(1))
 
+
 @router.get("/movies", response_model=MoviesResponse)
-async def movies_by_page(page: int = Query(1, ge=1), session: Session = Depends(get_db)) -> MoviesResponse:
+async def movies_by_page(
+    page: int = Query(1, ge=1), session: Session = Depends(get_db)
+) -> MoviesResponse:
     logger.debug(f"Movies requested for page {page}")
     movie_service = MovieService(session)
     movies = movie_service.get_movies_by_page(page)
     return MoviesResponse(movies=movies)
 
+
 @router.get("/search", response_model=MoviesResponse)
-async def search_movie(query: str = Query(...), session: Session = Depends(get_db)) -> MoviesResponse:
+async def search_movie(
+    query: str = Query(...), session: Session = Depends(get_db)
+) -> MoviesResponse:
     logger.debug(f"Search movies endpoint invoked with query: {query}")
-    
+
     movie_service = MovieService(session)
     movies = movie_service.search_movies(query)
     return movies
-    
