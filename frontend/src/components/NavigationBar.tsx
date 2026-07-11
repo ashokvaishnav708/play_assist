@@ -4,9 +4,6 @@ function NavigationBar() {
     return (
         <nav className="bg-black/80 backdrop-blur-md px-6 py-4 flex justify-between items-center shadow-lg border-b border-gray-800/50 sticky top-0 z-50">
             <Link to='/' className="flex items-center gap-3 hover:opacity-80 transition-opacity group">
-                <div className="w-8 h-8 bg-linear-to-r from-red-600 to-red-500 rounded-lg flex items-center justify-center">
-                    <span className="text-white font-bold text-lg">▶</span>
-                </div>
                 <span className="text-2xl font-bold bg-linear-to-r from-red-600 to-red-500 bg-clip-text text-transparent">
                     Play Assist
                 </span>
