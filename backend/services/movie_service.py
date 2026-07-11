@@ -2,6 +2,7 @@ from db.respository.movie import MovieRepository
 from models.movie import MovieCreateRequest, MovieResponse, TMDBResponse
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
+from uuid import UUID
 
 from ai.llm import get_embedding_model
 
@@ -99,7 +100,7 @@ class MovieService:
             except Exception as e:
                 logger.error(f"{e}")
 
-    def get_movie_by_id(self, movie_id: int) -> MovieResponse:
+    def get_movie_by_id(self, movie_id: UUID) -> MovieResponse:
         movie = self.__movie_repo.get_movie_by_id(id=movie_id)
 
         if movie:
