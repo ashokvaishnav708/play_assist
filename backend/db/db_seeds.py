@@ -9,16 +9,23 @@ logger = getLogger(__name__)
 
 from typing import List
 
+from utility.utils import get_env_key
+
+ADMIN_FIRST_NAME = get_env_key("ADMIN_FIRST_NAME", "Admin")
+ADMIN_LAST_NAME = get_env_key("ADMIN_LAST_NAME", "Password")
+ADMIN_EMAIL = get_env_key("ADMIN_EMAIL", "admin@playassist.com")
+ADMIN_PASSWORD = get_env_key("ADMIN_PASSWORD", "password")
+
 
 def get_users_seeds() -> List[UserCreateRequest]:
     users: List[UserCreateRequest] = []
 
     users.append(
         UserCreateRequest(
-            first_name="Admin",
-            last_name="Power",
-            email="admin@playassist.com",
-            password="password",
+            first_name=ADMIN_FIRST_NAME,
+            last_name=ADMIN_LAST_NAME,
+            email=ADMIN_EMAIL,
+            password=ADMIN_PASSWORD,
             is_admin=True,
         )
     )
