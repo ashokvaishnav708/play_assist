@@ -46,5 +46,6 @@ class User(Base):
     email = Column(String(70), unique=True)
     password = Column(String(250))
     created_at = Column(DateTime, default=datetime.now, nullable=False)
+    token_version = Column(Integer, default=0, nullable=False)
     # favorite_movies = Column(ARRAY(UUID(as_uuid=True), dimensions=1), nullable=False)
     # favorites_tv_series = Column(ARRAY(UUID(as_uuid=True), dimensions=1), nullable=False)
