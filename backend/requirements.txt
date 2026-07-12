@@ -4,7 +4,8 @@ pydantic
 httpx==0.28.1
 langchain==1.2.17
 langchain-community==0.4.1
-langchain-google-genai==4.2.2
+langchain-ollama==1.1.0
+langchain_anthropic==1.4.8
 google-genai==1.73.1
 SQLAlchemy==2.0.50
 psycopg2-binary==2.9.12

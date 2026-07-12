@@ -1,170 +1,145 @@
 from langchain.agents import create_agent
 from langchain.tools import tool
-from langchain.messages import SystemMessage, HumanMessage
-
+from langchain.messages import SystemMessage, HumanMessage, AIMessage
+from uuid import UUID
 from sqlalchemy.orm import Session
+import json
 
 from services.movie_service import MovieService
-from services.user_service import UserService
+
 from ai.llm import get_llm_model, get_embedding_model
 
 from models.ask_ai import QueryResponse
 from models.movie import MovieResponse
 
-from logging import getLogger
-logger = getLogger(__name__)
+from typing import List, TypedDict, Tuple, Any
 
-from typing import List
+from logging import getLogger
+
+logger = getLogger(__name__)
 
 
 class MovieRAGAgent:
     """
-    Intelligent agent for movie suggestions using RAG and pgvector.
-    
+    Intelligent agent for movie suggestions utilizing Agents and RAG.
+
     Features:
-    - Retrieves user's liked movies from database
     - Extracts genres from user query
-    - Performs similarity search on combined genre embeddings
+    - Performs similarity search on LLM extracted genres to embeddings
     - Returns JSON formatted suggestions
     """
 
-    __GENRE_ID_MAP = {
-        "action": 28, "adventure": 12, "animation": 16, "comedy": 35,
-        "crime": 80, "documentary": 99, "drama": 18, "family": 10751,
-        "fantasy": 14, "history": 36, "horror": 27, "music": 10402,
-        "mystery": 9648, "romance": 10749, "sci-fi": 878,
-        "thriller": 53, "war": 10752, "western": 37,
-    }
+    __SYSTEM_MESSAGE = SystemMessage(content="""You are a movie recommendation agent.
 
-    __SYSTEM_MESSAGE = SystemMessage(content="""You are an intelligent movie recommendation agent.
-                                         
-Your workflow steps are as follows:
-1. First, retrieve the user's liked movies genre ids to understand user's preferences
-2. Extract genre preferences from the user's search query
-3. Search for similar movies using the combined genre (from step 1 and step 2) and similarity search
-4. Provide personalized movie recommendations based on the similarity search results
+CORE RULE: Call the tool search_similar_movies if, and only if, the query is a request for movie suggestions. Do not call it for anything else. Never call it more than once per query. Never answer movie suggestions from your own knowledge — always rely on the tool's results.
 
-Always be helpful, friendly, and provide reasoning for your recommendations.
-Format your final answer with movie titles, genres, and brief descriptions.""")
+Valid genres: action, comedy, crime, drama, documentary, family, horror, science-fiction, music, history, romance, thriller, mystery, adventure, animation, fantasy, western, war
+
+TOOL:
+- search_similar_movies(genres_text): Call ONLY when the query is asking for movie suggestions/recommendations. genres_text is a comma-separated string of genres.
+
+STEPS:
+1. Determine whether the query is a movie-suggestion request.
+   - If NOT a movie-suggestion request: do NOT call any tool. Go directly to the output format below, with an answer stating you can only help with movie suggestions, and an empty ids list.
+   - If it IS a movie-suggestion request: continue to step 2.
+2. Extract valid genres explicitly mentioned in the query. If none are explicit, infer the closest matching genre(s) from the query's meaning.
+3. Call search_similar_movies exactly once, passing the genres as a comma-separated string.
+4. Use the returned movie overviews to write a short, friendly summary, and collect all returned movie ids.
+5. Output ONLY valid JSON, nothing else — no explanation, no markdown, no code fences:
+{"answer": "<friendly reasoning summary>", "ids": [<movie ids>]}""")
 
     def __init__(self, session: Session):
         self.__movie_service = MovieService(session)
-        self.__user_service = UserService(session)
         self.__llm = get_llm_model()
-        tools = [self.__get_user_liked_movies_genre_ids, self.__extract_genres_from_query, self.__perform_similarity_search]
+        tools = self.__get_agent_tools()
+        self.__agent = create_agent(
+            model=self.__llm, tools=tools, system_prompt=self.__SYSTEM_MESSAGE
+        )
 
-        self.__agent = create_agent(llm=self.__llm, tools=tools, system_prompt=self.__SYSTEM_MESSAGE)
+    def __get_agent_tools(self):
+        class SimilarMovies(TypedDict):
+            id: str
+            title: str
+            overview: str
 
-    
-    @tool
-    def __get_user_liked_movies_genre_ids(self, user_id: str) -> List[int]:
-        """
-        Retrieve all movies genre ids liked by a specific user.
-        
-        Args:
-            user_id: UUID of the user
-            
-        Returns:
-            List of user's liked movies genre ids
-        """
-        user = self.__user_service.get_user_by_id(user_id)
-        movies = [self.__movie_service.get_movie_by_id(movie_id) for movie_id in user.favorite_movies]
-        all_genres: List[int] = []
-        for movie in movies:
-            all_genres = [*all_genres, *movie.genre_ids]
-        return list(set(all_genres))
-    
-    @tool
-    def __extract_genres_from_query(self, query: str) -> List[int]:
-        """
-        Extract genre ids from user query using LLM.
-        
-        Args:
-            query: User's search query
-            
-        Returns:
-            List of extracted genre ids
-        """
-        try:
-            
-            extraction_prompt = f"""
-            Extract genre ids from the following movie search query.
-            Return a list of genre ids. Only return valid movie genres.
-            
-            Query: {query}
-            
-            Example genres: action, comedy, crime, drama, documentary, family, horror, sci-fi, music, history, romance, thriller, mystery, adventure, animation, fantasy, western, war
-            
-            Return only the list from exaample genres, no other text.
+        @tool
+        def search_similar_movies(
+            genres_text: str,
+        ) -> List[SimilarMovies]:
             """
-            
-            response = self.__llm.invoke([HumanMessage(content=extraction_prompt)])
-            genres_str = response.content.strip()
-            logger.info(f"Extracted genre: {genres_str}")
-            # TODO: map string genres to ids via self.__GENRE_ID_MAP
-            return genres_str
-        except Exception as e:
-            logger.error("Error extracting genres from query.")
-            return []
-        
+            Searches similar movies using genres text provided as parameter.
 
-    @tool
-    def __perform_similarity_search(
-        self,
-        genres: List[int],
-    ) -> List[MovieResponse]:
-        """
-        Perform similarity search on movies combining genre filters and embeddings.
-        
-        Args:
-            query_text: Original user query for embedding
-            genres: List of genre filters
-            limit: Number of results to return
-            
-        Returns:
-            List of suggested movies with similarity scores
-        """
-        try:
-            query_embedding = get_embedding_model(True).embed_query(str(genres))
-            movies = self.__movie_service.similarity_search(query_embedding)
-            return movies
-        except Exception as e:
-            logger.error(f"Error performing similarity search: {str(e)}")
-            return []
-    
-    
-    def suggest_movies(
-        self,
-        query: str
-    ) -> QueryResponse:
+            Args:
+                genres_text: comma-separated genres text
+
+            Returns:
+                List of movie ids
+            """
+            logger.debug(
+                f"Agent: Performing similarity search on Genres: {genres_text}."
+            )
+            try:
+                query_embedding = get_embedding_model().embed_query(genres_text)
+                movies = self.__movie_service.similarity_search(query_embedding)
+                return [
+                    SimilarMovies(
+                        id=str(movie.id),
+                        title=movie.title,
+                        overview=movie.overview,
+                    )
+                    for movie in movies
+                ]
+            except Exception as e:
+                logger.error(f"Error performing similarity search: {str(e)}")
+                return []
+
+        return [search_similar_movies]
+
+    def suggest_movies(self, query: str) -> Tuple[str, List[MovieResponse]]:
         """
         Main method to get movie suggestions for a user.
-        
+
         Args:
-            user_id: UUID of the user
             query: User's search query
-            limit: Number of movies suggestions
         Returns:
-            QueryResponse with AI answer and data
+            Tuple with AI answer and suggested movies
         """
-        
-        user_id = self.__user_service.get_user().id
-        
+
         try:
-            # Execute agent
-            response = self.__agent.invoke({"input": f"""Please suggest movies for this user (UUID: {user_id}) based on user's query: "{query}"."""})
-            
-            ai_answer = response.get("output", "No recommendations generated")
-            
-            return QueryResponse(
-                answer=ai_answer,
-                movies=[]
+            response = self.__agent.invoke(
+                {"messages": [HumanMessage(f"Query: {query}")]}
             )
-        
+
+            ai_answer = response.get("messages")[-1].content
+
+            logger.debug(f"AI Message: {ai_answer}")
+
+            if isinstance(ai_answer, str):
+                ai_answer = json.loads(ai_answer)
+
+            if isinstance(ai_answer, list):
+                ai_answer = ai_answer[-1].get("text")
+                if isinstance(ai_answer, str):
+                    ai_answer = json.loads(ai_answer)
+
+            answer = ai_answer.get("answer")
+            ids: List[str] = ai_answer.get("ids", [])
+
+            movies: List[MovieResponse] = []
+
+            for id in ids:
+                try:
+                    movie = self.__movie_service.get_movie_by_id(UUID(id))
+                    movies.append(movie)
+                except Exception as e:
+                    logger.error(
+                        f"Could not fetch movie with id: {id} deu to {e}. Skipping..."
+                    )
+
+            return (answer, movies)
+
         except Exception as e:
             logger.error(f"Error generating agent reponse due to {e}")
             return QueryResponse(
-                answer=f"Error generating movies suggestions.",
-                movies=[]
+                answer=f"Error generating movies suggestions.", movies=[]
             )
-

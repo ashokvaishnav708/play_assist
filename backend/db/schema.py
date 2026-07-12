@@ -4,6 +4,9 @@ from sqlalchemy.dialects.postgresql import ARRAY, UUID
 from pgvector.sqlalchemy import Vector
 from db.database import Base
 import uuid
+from utility.utils import get_env_key
+
+VECTOR_SIZE = int(get_env_key("VECTOR_SIZE"))
 
 
 class Movie(Base):
@@ -16,8 +19,9 @@ class Movie(Base):
     poster_path = Column(String, nullable=True, default=None)
     original_language = Column(String, nullable=False)
     overview = Column(String, nullable=False)
-    genre_ids = Column(ARRAY(Integer, dimensions=1), nullable=False)
-    embedding = Column(Vector(3072))
+    genre_types = Column(ARRAY(String, dimensions=1), nullable=False)
+    embedding = Column(Vector(VECTOR_SIZE))
+
 
 # TV Series will be implemented later
 # class TVSeries(Base):
@@ -33,7 +37,6 @@ class Movie(Base):
 #     genre_ids = Column(ARRAY(Integer, dimensions=1), nullable=False)
 
 
-
 class User(Base):
     __tablename__ = "users"
 
@@ -43,5 +46,5 @@ class User(Base):
     email = Column(String(70), unique=True)
     password = Column(String(250))
     created_at = Column(DateTime, default=datetime.now, nullable=False)
-    favorite_movies = Column(ARRAY(UUID(as_uuid=True), dimensions=1), nullable=False)
+    # favorite_movies = Column(ARRAY(UUID(as_uuid=True), dimensions=1), nullable=False)
     # favorites_tv_series = Column(ARRAY(UUID(as_uuid=True), dimensions=1), nullable=False)

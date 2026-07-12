@@ -1,4 +1,4 @@
-import Favorites from './pages/Favorites';
+// import Favorites from './pages/Favorites';
 import Home from './pages/Home';
 import { Route, Routes } from 'react-router';
 import NavigationBar from './components/NavigationBar';
@@ -16,7 +16,7 @@ function App() {
         <main className='flex-1 w-full'>
           <Routes>
             <Route path='/' element={<Home/>} />
-            <Route path='/favorites' element={<Favorites />} />
+            {/* <Route path='/favorites' element={<Favorites />} /> */}
             <Route path='/ask_ai' element={<AI />} />
             <Route path='/auth_form' element={ <AuthForm /> } />
             <Route path='/settings' element={ <Settings /> } />

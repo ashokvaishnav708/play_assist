@@ -18,7 +18,7 @@ class UserService:
 
         user = self.__user_repo.create_user(user_data=user_data)
 
-        return UserResponse.model_validate(user.__dict__)
+        return UserResponse(**user.__dict__)
     
     def login(self, login_details: UserLoginRequest) -> UserWithToken:
         if not self.__user_repo.get_user_by_email(login_details.email):
@@ -37,12 +37,12 @@ class UserService:
         user = self.__user_repo.get_user_by_id(user_id=user_id)
 
         if user:
-            return UserResponse.model_validate(user.__dict__)
+            return UserResponse(**user.__dict__)
         raise HTTPException(status_code=400, detail="User is not available.")
     
     def get_user(self) -> UserResponse:
         user = self.__user_repo.get_user()
 
         if user:
-            return UserResponse.model_validate(user.__dict__)
+            return UserResponse(**user.__dict__)
         raise HTTPException(status_code=400, detail="User not found.")

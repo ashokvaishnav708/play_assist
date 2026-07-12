@@ -21,12 +21,12 @@ function MovieCard(movie: Media) {
                 <div className="absolute inset-0 bg-linear-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
                 {/* Favorite Button */}
-                <button 
+                {/* <button 
                     className={`absolute top-4 right-4 text-2xl p-2 bg-black/60 rounded-full w-12 h-12 flex items-center justify-center transition-all duration-200 hover:bg-black/90 backdrop-blur-sm border border-gray-700/50 ${favorite ? 'text-red-500 bg-red-500/20 border-red-500/50' : 'text-white hover:text-red-500'}`} 
                     onClick={ onFavoriteClick }
                 >
                     { favorite ? "❤️" : "🤍" }
-                </button>
+                </button> */}
             </div>
 
             {/* Content Section */}

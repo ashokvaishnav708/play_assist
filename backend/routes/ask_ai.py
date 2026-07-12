@@ -1,29 +1,31 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from logging import getLogger
 
 from models.ask_ai import QueryRequest, QueryResponse
-from ai.rag_chain import rag_chain
-from backend.ai.agent import movie_agent
+
+from db.database import get_db
+from sqlalchemy.orm import Session
+
+from ai.movie_rag_agent import MovieRAGAgent
+from services.user_service import UserService
 
 logger = getLogger(__name__)
 
 router = APIRouter()
 
+
 @router.post("/query", response_model=QueryResponse)
-async def query_ai(request: QueryRequest) -> QueryResponse:
+async def query_ai(
+    request: QueryRequest, session: Session = Depends(get_db)
+) -> QueryResponse:
     query = request.question
-    logger.info(f"AI query received: {query}")
-    
-    answer, movies = rag_chain.query(query)
+    logger.debug(f"AI query received: {query}")
+
+    agent = MovieRAGAgent(session)
+
+    answer, movies = agent.suggest_movies(query)
+
+    logger.debug(f"Answer: {answer}")
+    logger.debug(f"Movies length: {len(movies)}")
+
     return QueryResponse(answer=answer, movies=movies)
-
-@router.post("/query_agent", response_model=QueryResponse)
-async def query_agent(request: QueryRequest) -> QueryResponse:
-    query = request.question
-    logger.debug(f"Agent query received: {query}")
-    movie_agent.query_agent(query)
-
-    return QueryResponse(answer="", movies=[])
-
-
-

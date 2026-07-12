@@ -1,11 +1,45 @@
-from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
+from langchain_anthropic import ChatAnthropic
+from langchain_ollama import OllamaEmbeddings
 from utility.utils import get_env_key
 
-GOOGLE_API_KEY = get_env_key("GEMINI_API_KEY")
+from logging import getLogger
 
-def get_llm_model() -> ChatGoogleGenerativeAI:
-    return ChatGoogleGenerativeAI(model="gemini-3-flash-preview", google_api_key=GOOGLE_API_KEY, temperature=0.1)
+logger = getLogger(__name__)
 
-def get_embedding_model(is_query: bool = False) -> GoogleGenerativeAIEmbeddings:
-    task_type = "retrieval_query" if is_query else "retrieval_document"
-    return GoogleGenerativeAIEmbeddings(model="gemini-embedding-2-preview", google_api_key=GOOGLE_API_KEY, task_type=task_type)
+ANTHROPIC_API_KEY = get_env_key("ANTHROPIC_API_KEY")
+ANTHROPIC_MODEL = get_env_key("ANTHROPIC_MODEL")
+
+OLLAMA_BASE_URL = get_env_key("OLLAMA_BASE_URL")
+EMBED_MODEL = get_env_key("EMBED_MODEL")
+
+
+_LLM: ChatAnthropic | None = None
+_EMBEDDINGS: OllamaEmbeddings | None = None
+
+
+def get_llm_model() -> ChatAnthropic:
+    global _LLM
+
+    if _LLM is None:
+        logger.info(
+            f"Initializing LLM model with model={ANTHROPIC_MODEL} from Anthropic."
+        )
+        _LLM = ChatAnthropic(
+            model=ANTHROPIC_MODEL,
+            api_key=ANTHROPIC_API_KEY,
+            thinking={"type": "adaptive"},
+        )
+
+    return _LLM
+
+
+def get_embedding_model() -> OllamaEmbeddings:
+    global _EMBEDDINGS
+
+    if _EMBEDDINGS is None:
+        logger.info(
+            f"Initializing OllamaEmbeddings with model={EMBED_MODEL} at {OLLAMA_BASE_URL}"
+        )
+        _EMBEDDINGS = OllamaEmbeddings(model=EMBED_MODEL, base_url=OLLAMA_BASE_URL)
+
+    return _EMBEDDINGS
