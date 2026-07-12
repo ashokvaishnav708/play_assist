@@ -18,6 +18,7 @@ export type User = {
     last_name: string;
     email: string;
     created_at: string;
+    is_admin: boolean;
 };
 
 export type TokenPair = {

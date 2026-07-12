@@ -19,6 +19,7 @@ def get_users_seeds() -> List[UserCreateRequest]:
             last_name="Power",
             email="admin@playassist.com",
             password="password",
+            is_admin=True,
         )
     )
 
