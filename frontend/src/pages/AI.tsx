@@ -49,13 +49,13 @@ function Home() {
                     <h1 className='text-5xl md:text-6xl font-bold text-white mb-4'>
                         🤖 Ask AI
                     </h1>
-                    <p className='text-gray-400 text-lg mb-8'>Get personalized movie and TV show recommendations powered by AI</p>
+                    <p className='text-gray-400 text-lg mb-8'>Get personalized movie recommendations powered by AI</p>
                     
                     <form onSubmit={ handleSearch } className='flex gap-3 max-w-2xl'>
                         <input 
                             type='text' 
                             className='flex-1 px-6 py-4 border-none rounded-lg bg-gray-800 text-white text-base placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all' 
-                            placeholder='Ask me anything about movies or TV shows...'
+                            placeholder='Ask me anything about movies...'
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
