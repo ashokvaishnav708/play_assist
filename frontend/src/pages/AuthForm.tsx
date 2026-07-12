@@ -1,7 +1,10 @@
-import { useState } from "react";
-import { loginUser, signupUser } from "../services/api";
+import { useState, type FormEvent } from "react";
+import { Navigate, useNavigate } from "react-router";
+import { useAuth } from "../contexts/AuthContext";
 
 function AuthForm() {
+    const { isAuthenticated, login, signup } = useAuth();
+    const navigate = useNavigate();
     const [isLogin, setIsLogin] = useState(true);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -11,18 +14,18 @@ function AuthForm() {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
-    const handleLogin = async (e: Event) => {
+    if (isAuthenticated) {
+        return <Navigate to="/" replace />;
+    }
+
+    const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setError("");
         setLoading(true);
 
         try {
-            const loginData = await loginUser(email, password);
-
-            localStorage.setItem("token", loginData.token);
-            alert("Login successful!");
-            setEmail("");
-            setPassword("");
+            await login(email, password);
+            navigate("/");
         } catch (err) {
             setError(err instanceof Error ? err.message : "Login failed");
         } finally {
@@ -30,7 +33,7 @@ function AuthForm() {
         }
     };
 
-    const handleSignUp = async (e: Event) => {
+    const handleSignUp = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setError("");
 
@@ -42,7 +45,7 @@ function AuthForm() {
         setLoading(true);
 
         try {
-            await signupUser(email, password, firstName, lastName);
+            await signup(email, password, firstName, lastName);
 
             alert("Sign up successful! Please log in.");
             setIsLogin(true);
