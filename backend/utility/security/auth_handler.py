@@ -1,4 +1,5 @@
 from utility.utils import get_env_key
+from uuid import UUID
 import time
 import jwt
 from logging import getLogger
@@ -13,9 +14,10 @@ DEFAULT_EXPIRY_SECONDS = 900 # 15 minutes
 class AuthHandler(object):
 
     @staticmethod
-    def sign_jwt(user_id: int, expiry: float | None = None, refresh: bool = False) -> str:
+    def sign_jwt(user_id: UUID, expiry: float | None = None, refresh: bool = False) -> str:
         payload = {
-            "user_id": user_id,
+            # UUID is not JSON-serializable, so PyJWT needs it as a string
+            "user_id": str(user_id),
             "expires": time.time() + (expiry if expiry is not None else DEFAULT_EXPIRY_SECONDS)
         }
 

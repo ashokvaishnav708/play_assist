@@ -2,6 +2,7 @@ from db.respository.user import UserRepository
 from models.user import UserCreateRequest, UserLoginRequest, UserWithToken, UserResponse
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
+from uuid import UUID
 from utility.security.hash_helper import HashHelper
 from utility.security.auth_handler import AuthHandler
 
@@ -33,7 +34,7 @@ class UserService:
             raise HTTPException(status_code=500, detail="Unable to process request.")
         raise HTTPException(status_code=400, detail="Please check your credentials.")
     
-    def get_user_by_id(self, user_id: int) -> UserResponse:
+    def get_user_by_id(self, user_id: UUID) -> UserResponse:
         user = self.__user_repo.get_user_by_id(user_id=user_id)
 
         if user:
