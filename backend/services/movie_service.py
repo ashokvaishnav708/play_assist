@@ -63,14 +63,6 @@ class MovieService:
 
         return genre_types
 
-    def __generate_embedding(self, text: str) -> List[float]:
-        try:
-            embedding = self.__embedding_model.embed_query(text)
-            return embedding
-        except Exception as e:
-            logger.log(f"Error generating embedding due to {e}.")
-            return []
-
     def add_movie(self, movie: TMDBResponse) -> MovieResponse:
         ### movie.id refers to TMDB movie id
         if self.__movie_repo.get_movie_by_tmdb_id(movie.id):
@@ -88,7 +80,6 @@ class MovieService:
         movie_text = self.__movie_to_text(movie_to_create)
 
         embedding = self.__embedding_model.embed_query(movie_text)
-        logger.info(f"Embedding lenght: {len(embedding)}")
         movie = self.__movie_repo.create_movie(movie_to_create, embedding)
 
         return MovieResponse(**movie.__dict__)

@@ -1,6 +1,7 @@
 from .base import BaseRepository
 from db.schema import User
 from models.user import UserCreateRequest
+from uuid import UUID
 
 
 class UserRepository(BaseRepository):
@@ -24,10 +25,18 @@ class UserRepository(BaseRepository):
         user = self._session.query(User).filter_by(email=email).first()
         return user
     
-    def get_user_by_id(self, id: int) -> User | None:
+    def get_user_by_id(self, id: UUID) -> User | None:
         user = self._session.query(User).filter_by(id=id).first()
         return user
     
     def get_user(self) -> User | None:
         user = self._session.query(User).first()
+        return user
+
+    def increment_token_version(self, user_id: UUID) -> User | None:
+        user = self.get_user_by_id(user_id)
+        if user:
+            user.token_version += 1
+            self._session.commit()
+            self._session.refresh(user)
         return user

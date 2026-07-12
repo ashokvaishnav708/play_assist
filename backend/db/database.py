@@ -10,8 +10,10 @@ engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
+
 def create_tables():
     Base.metadata.create_all(bind=engine)
+
 
 def init_db():
     # Enable pgvector
@@ -19,10 +21,10 @@ def init_db():
         conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
         conn.commit()
     create_tables()
-    db = SessionLocal() 
+    db = SessionLocal()
     execute_seeds(db)
     db.close()
-    
+
 
 def get_db():
     db = SessionLocal()
