@@ -4,19 +4,19 @@ from typing import Union, List
 from datetime import datetime
 
 
-class UserCreateRequest(BaseModel):
+class UserBase(BaseModel):
     first_name: str
     last_name: str
     email: str
+
+
+class UserCreateRequest(UserBase):
     password: str
     # favorite_movies: List[str]
 
 
-class UserResponse(UserCreateRequest):
+class UserResponse(UserBase):
     id: UUID
-    first_name: str
-    last_name: str
-    email: str
     created_at: datetime
     # favorite_movies: List[str]
 
@@ -36,5 +36,16 @@ class UserLoginRequest(BaseModel):
     password: str
 
 
-class UserWithToken(BaseModel):
-    token: str
+class TokenPair(BaseModel):
+    access_token: str
+    refresh_token: str
+    token_type: str = "bearer"
+    expires_in: int
+
+
+class UserWithToken(TokenPair):
+    user: UserResponse
+
+
+class RefreshRequest(BaseModel):
+    refresh_token: str
