@@ -1,3 +1,7 @@
+"""Retrieval-Augmented Generation (RAG) agent that turns a free-text query
+into movie recommendations by combining an LLM tool-calling agent with a
+vector similarity search over the movies table."""
+
 from langchain.agents import create_agent
 from langchain.tools import tool
 from langchain.messages import SystemMessage, HumanMessage, AIMessage
@@ -49,6 +53,7 @@ STEPS:
 {"answer": "<friendly reasoning summary>", "ids": [<movie ids>]}""")
 
     def __init__(self, session: Session):
+        """Build the agent for a single request, bound to the given DB session."""
         self.__movie_service = MovieService(session)
         self.__llm = get_llm_model()
         tools = self.__get_agent_tools()
@@ -57,7 +62,11 @@ STEPS:
         )
 
     def __get_agent_tools(self):
+        """Build the LangChain tool(s) exposed to the agent for tool-calling."""
+
         class SimilarMovies(TypedDict):
+            """Shape of a single similarity-search result returned to the LLM."""
+
             id: str
             title: str
             overview: str
@@ -110,6 +119,9 @@ STEPS:
                 {"messages": [HumanMessage(f"Query: {query}")]}
             )
 
+            # The final message's content is either a raw JSON string, or (when
+            # thinking blocks are present) a list of content blocks whose last
+            # entry holds the JSON text - normalize both into a dict.
             ai_answer = response.get("messages")[-1].content
 
             logger.debug(f"AI Message: {ai_answer}")
@@ -127,6 +139,8 @@ STEPS:
 
             movies: List[MovieResponse] = []
 
+            # Resolve each id the LLM returned back into a full movie record,
+            # skipping any id that no longer exists rather than failing the request.
             for id in ids:
                 try:
                     movie = self.__movie_service.get_movie_by_id(UUID(id))

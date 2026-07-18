@@ -1,3 +1,5 @@
+"""FastAPI dependency that guards routes behind a valid bearer JWT."""
+
 from fastapi import Depends, Header, HTTPException, status
 from sqlalchemy.orm import Session
 from uuid import UUID
@@ -14,6 +16,13 @@ def get_current_user(
         session: Session = Depends(get_db),
         authorization: Annotated[Union[str, None], Header()] = None
         ) -> UserResponse:
+    """FastAPI dependency that resolves the current user from the `Authorization` header.
+
+    Use via `Depends(get_current_user)` on any route that must be authenticated.
+    Raises HTTPException(401) for a missing/malformed header, an expired or
+    invalid token, a refresh token used as an access token, or a token whose
+    version no longer matches the user's current one.
+    """
 
     auth_exception = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Authentication.")
 

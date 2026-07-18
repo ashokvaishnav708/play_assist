@@ -1,11 +1,16 @@
 import { useState } from 'react';
 import { fetchLatestMovies } from '../services/api';
 
+/**
+ * Admin-only settings page (gated by RequireAuth + is_admin check in
+ * NavigationBar) for triggering a bulk import of the latest movies from TMDB.
+ */
 function Settings() {
 
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
-    
+
+    /** Trigger the backend's TMDB import endpoint. */
     async function handleClick(e: Event) {
             e.preventDefault();
             if (loading) return;

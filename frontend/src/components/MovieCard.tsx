@@ -1,11 +1,19 @@
 import type { Media } from '../services/types';
 import { useMovieContext } from "../contexts/MovieContext";
 
+/**
+ * Poster card for a single movie/show, used across Home, Favorites, and AI
+ * results. Props are the Media fields directly (spread from a Media object).
+ *
+ * Note: the favorite toggle button is currently commented out in the markup
+ * below, so onFavoriteClick is defined but not wired to any element yet.
+ */
 function MovieCard(movie: Media) {
     const { isFavorite, addFavorite, removeFavorite } = useMovieContext();
 
     const favorite = isFavorite(movie.id);
 
+    /** Toggle this movie's favorite status. */
     function onFavoriteClick(e: Event) {
         e.preventDefault();
         if (favorite) removeFavorite(movie.id);

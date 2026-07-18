@@ -1,3 +1,5 @@
+"""FastAPI application entry point: wires up middleware, routers, and startup/shutdown."""
+
 import uvicorn
 import logging
 from fastapi import FastAPI
@@ -35,12 +37,14 @@ DEBUG = True
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    """Run startup work (DB init/migrations/seeding) before serving any requests."""
     init_db()
     yield
 
 
 app = FastAPI(debug=DEBUG, lifespan=lifespan)
 
+# Frontend dev server origins allowed to call this API with credentials.
 origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173"

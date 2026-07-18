@@ -3,6 +3,10 @@ import MovieCard from '../components/MovieCard';
 import { useEffect, useState } from 'react';
 import { searchMovies, getPopularMovies } from '../services/api';
 
+/**
+ * Home page: shows popular movies on load, and lets the user search by
+ * free-text query.
+ */
 function Home() {
     const [searchQuery, setSearchQuery] = useState("");
 
@@ -10,6 +14,7 @@ function Home() {
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
 
+    // Load popular movies once on mount.
     useEffect(() => {
         async function loadPopularMovies() {
             try {
@@ -26,18 +31,20 @@ function Home() {
         loadPopularMovies();
     }, []);
 
+    /** Render a single movie result as a MovieCard. */
     function getMovieCard(movie: Media) {
-        return <MovieCard 
-                    id={movie.id} 
-                    key={movie.id} 
-                    title={movie.title} 
-                    overview={movie.overview} 
-                    release_date={movie.release_date} 
-                    poster_path={movie.poster_path} 
+        return <MovieCard
+                    id={movie.id}
+                    key={movie.id}
+                    title={movie.title}
+                    overview={movie.overview}
+                    release_date={movie.release_date}
+                    poster_path={movie.poster_path}
                     original_language={movie.original_language}
                 />;
     }
 
+    /** Submit the search form and replace the movie grid with results. */
     async function handleSearch(e: Event) {
         e.preventDefault();
         if (!searchQuery.trim()) return;

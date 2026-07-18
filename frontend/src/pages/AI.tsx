@@ -3,6 +3,13 @@ import MovieCard from '../components/MovieCard';
 import { useEffect, useState } from 'react';
 import { askAI } from '../services/api';
 
+/**
+ * "Ask AI" page: takes a free-text query, sends it to the RAG backend, and
+ * renders the AI's answer plus any recommended movies.
+ *
+ * NOTE: this component is named `Home` (same as pages/Home.tsx) but is
+ * actually the AI page - left as-is, not renamed.
+ */
 function Home() {
     const [searchQuery, setSearchQuery] = useState("");
 
@@ -11,18 +18,20 @@ function Home() {
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
 
+    /** Render a single movie result as a MovieCard. */
     function getMovieCard(movie: Media) {
-        return <MovieCard 
-            id={movie.id} 
-            key={movie.id} 
-            title={movie.title} 
-            overview={movie.overview} 
-            release_date={movie.release_date} 
+        return <MovieCard
+            id={movie.id}
+            key={movie.id}
+            title={movie.title}
+            overview={movie.overview}
+            release_date={movie.release_date}
             original_language={movie.original_language}
             poster_path={movie.poster_path}
         />;
     }
 
+    /** Submit the query to the AI endpoint and populate the answer/results. */
     async function handleSearch(e: Event) {
         e.preventDefault();
         if (!searchQuery.trim()) return;

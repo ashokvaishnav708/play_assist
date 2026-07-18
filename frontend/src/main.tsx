@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router';
 import './css/index.css';
 import App from './App.tsx';
 
+// App entry point: mounts <App> into #root with routing and StrictMode enabled.
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>

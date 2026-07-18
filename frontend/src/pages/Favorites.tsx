@@ -2,10 +2,17 @@ import { useMovieContext } from '../contexts/MovieContext';
 import MovieCard from '../components/MovieCard';
 import type { Media } from '../services/types';
 
+/**
+ * Favorites page: lists the user's saved movies (from MovieContext /
+ * localStorage), or an empty-state message when there are none.
+ *
+ * Note: not currently routed in App.tsx (route is commented out).
+ */
 function Favorites()  {
 
     const { favorites } = useMovieContext();
 
+    /** Render a single favorite as a MovieCard. */
     function getMovieCard(movie: Media) {
         return <MovieCard 
                     id={movie.id} 

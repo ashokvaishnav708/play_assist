@@ -1,6 +1,11 @@
+/**
+ * Global favorites state, persisted to localStorage. Wrap the app in
+ * <MovieProvider> and read/mutate favorites via `useMovieContext()`.
+ */
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react"
 import type { Media } from "../services/types";
 
+/** Shape of the value exposed by MovieContext / useMovieContext(). */
 type MovieContextType = {
     favorites: Media[];
     addFavorite: (movie: Media) => void;
@@ -10,13 +15,16 @@ type MovieContextType = {
 
 const MovieContext = createContext<MovieContextType>(null as unknown as MovieContextType);
 
+/** Hook for consuming favorites state/actions anywhere under <MovieProvider>. */
 export function useMovieContext() {
     return useContext(MovieContext);
 }
 
+/** Provides favorites state to the app, backed by localStorage. */
 export function MovieProvider({ children }: { children: ReactNode }) {
     const [favorites, setFavorites] = useState<Media[]>([]);
 
+    // Load any previously saved favorites once, on mount.
     useEffect(() => {
         const storedFavs = localStorage.getItem('favorites');
 
@@ -25,6 +33,7 @@ export function MovieProvider({ children }: { children: ReactNode }) {
         }
     }, []);
 
+    // Persist favorites to localStorage whenever they change.
     useEffect(() => {
         localStorage.setItem('favorites', JSON.stringify(favorites));
     }, [favorites]);
