@@ -9,6 +9,7 @@ import Settings from './pages/Settings';
 import { MovieProvider } from './contexts/MovieContext';
 import { AuthProvider } from './contexts/AuthContext';
 
+/** Root component: sets up global providers, the nav bar, and page routes. */
 function App() {
 
   return (

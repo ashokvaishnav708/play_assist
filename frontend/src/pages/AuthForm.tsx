@@ -2,6 +2,10 @@ import { useState, type FormEvent } from "react";
 import { Navigate, useNavigate } from "react-router";
 import { useAuth } from "../contexts/AuthContext";
 
+/**
+ * Combined login/signup page. Redirects to "/" if already authenticated;
+ * otherwise toggles between a login form and a signup form.
+ */
 function AuthForm() {
     const { isAuthenticated, login, signup } = useAuth();
     const navigate = useNavigate();
@@ -18,6 +22,7 @@ function AuthForm() {
         return <Navigate to="/" replace />;
     }
 
+    /** Submit the login form and redirect home on success. */
     const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setError("");
@@ -33,6 +38,7 @@ function AuthForm() {
         }
     };
 
+    /** Submit the signup form, then switch back to the login tab on success. */
     const handleSignUp = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setError("");

@@ -1,10 +1,12 @@
 import { Link, useNavigate } from "react-router";
 import { useAuth } from "../contexts/AuthContext";
 
+/** Top-level nav bar: brand link, primary nav links, and auth actions. */
 function NavigationBar() {
     const { isAuthenticated, user, logout } = useAuth();
     const navigate = useNavigate();
 
+    /** Log the current user out and redirect to the auth form. */
     async function handleLogout() {
         await logout();
         navigate('/auth_form');

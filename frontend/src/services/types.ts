@@ -1,3 +1,6 @@
+/** Shared types mirroring the backend's Pydantic response models. */
+
+/** A movie/show as returned by the movies and AI endpoints. */
 export type Media = {
     id: number;
     title: string
@@ -7,11 +10,13 @@ export type Media = {
     overview: string
 };
 
+/** Response from POST /ask_ai/query. */
 export type AIQueryResponse = {
     answer: string;
     movies: Media[];
 }
 
+/** The authenticated user, as returned by /auth/me, /auth/login, /auth/signup. */
 export type User = {
     id: string;
     first_name: string;
@@ -21,6 +26,7 @@ export type User = {
     is_admin: boolean;
 };
 
+/** Access/refresh token pair returned by login and token refresh. */
 export type TokenPair = {
     access_token: string;
     refresh_token: string;
@@ -28,6 +34,7 @@ export type TokenPair = {
     expires_in: number;
 };
 
+/** Login response: a token pair plus the authenticated user. */
 export type AuthResponse = TokenPair & {
     user: User;
 };

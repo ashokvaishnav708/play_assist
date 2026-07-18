@@ -1,3 +1,7 @@
+/**
+ * Thin fetch wrapper for the backend API: token storage, an authenticated
+ * fetch with automatic silent refresh-on-401, and one function per endpoint.
+ */
 import type { Media, AIQueryResponse, User, TokenPair, AuthResponse } from "./types";
 
 const API_BASE_URL = "http://127.0.0.1:8000";
@@ -9,24 +13,29 @@ const REFRESH_TOKEN_KEY = "refresh_token";
 // can drop back to a logged-out state regardless of which call noticed it.
 export const AUTH_LOGOUT_EVENT = "auth:logout";
 
+/** Read the stored access token, or null if the user isn't logged in. */
 export function getAccessToken(): string | null {
     return localStorage.getItem(ACCESS_TOKEN_KEY);
 }
 
+/** Read the stored refresh token, or null if none is stored. */
 function getRefreshToken(): string | null {
     return localStorage.getItem(REFRESH_TOKEN_KEY);
 }
 
+/** Persist a freshly issued access/refresh token pair to localStorage. */
 function setTokens(tokens: TokenPair) {
     localStorage.setItem(ACCESS_TOKEN_KEY, tokens.access_token);
     localStorage.setItem(REFRESH_TOKEN_KEY, tokens.refresh_token);
 }
 
+/** Remove any stored tokens (used on logout or when refresh fails). */
 function clearTokens() {
     localStorage.removeItem(ACCESS_TOKEN_KEY);
     localStorage.removeItem(REFRESH_TOKEN_KEY);
 }
 
+/** Extract a human-readable error message from a failed response, or fall back. */
 async function parseErrorDetail(response: Response, fallback: string): Promise<string> {
     try {
         const error = await response.json();
@@ -36,6 +45,7 @@ async function parseErrorDetail(response: Response, fallback: string): Promise<s
     }
 }
 
+/** Exchange the stored refresh token for a new token pair, storing the result. */
 async function refreshAccessToken(): Promise<string> {
     const refreshToken = getRefreshToken();
     if (!refreshToken) {
@@ -82,6 +92,7 @@ async function authFetch(path: string, init: RequestInit = {}, isRetry = false):
     return response;
 }
 
+/** Log in with email/password, storing the returned tokens on success. */
 export async function loginUser(email: string, password: string): Promise<AuthResponse> {
     const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: "POST",
@@ -100,6 +111,7 @@ export async function loginUser(email: string, password: string): Promise<AuthRe
     return data;
 }
 
+/** Create a new user account. Does not log the user in. */
 export async function signupUser(email: string, password: string, firstName: string, lastName: string): Promise<User> {
     const response = await fetch(`${API_BASE_URL}/auth/signup`, {
         method: "POST",
@@ -121,6 +133,7 @@ export async function signupUser(email: string, password: string, firstName: str
     return await response.json();
 }
 
+/** Log out on the backend (invalidating tokens) and always clear local tokens. */
 export async function logoutUser(): Promise<void> {
     try {
         if (getAccessToken()) {
@@ -133,6 +146,7 @@ export async function logoutUser(): Promise<void> {
     }
 }
 
+/** Fetch the currently authenticated user's profile. */
 export async function getMe(): Promise<User> {
     const response = await authFetch("/auth/me");
 
@@ -143,18 +157,21 @@ export async function getMe(): Promise<User> {
     return await response.json();
 }
 
+/** Fetch the first page of currently popular movies. */
 export async function getPopularMovies(): Promise<Media[]> {
     const response = await authFetch("/movies/movies");
     const data = await response.json();
     return data.movies;
 }
 
+/** Search movies by free-text query. */
 export async function searchMovies(query: string): Promise<Media[]> {
     const response = await authFetch(`/movies/search?query=${encodeURIComponent(query)}`);
     const data = await response.json();
     return data.movies;
 }
 
+/** Ask the AI recommendation agent a free-text movie question. */
 export async function askAI(question: string): Promise<AIQueryResponse> {
     const response = await authFetch("/ask_ai/query", {
         method: "POST",
@@ -167,6 +184,7 @@ export async function askAI(question: string): Promise<AIQueryResponse> {
     return data;
 }
 
+/** Trigger the backend to import the latest popular movies from TMDB (admin action). */
 export async function fetchLatestMovies() {
     const response = await authFetch("/movies/load_movies");
     if (!response.ok) {
