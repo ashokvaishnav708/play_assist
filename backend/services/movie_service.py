@@ -1,3 +1,9 @@
+"""Business logic for movie ingestion, lookup, and similarity search.
+
+Sits between the routes layer and MovieRepository: translates TMDB/ORM data
+into API-facing Pydantic models and owns embedding generation.
+"""
+
 from db.respository.movie import MovieRepository
 from models.movie import MovieCreateRequest, MovieResponse, TMDBResponse
 from fastapi import HTTPException
@@ -16,6 +22,10 @@ MOVIES_PER_PAGE = 40
 
 
 class MovieService:
+    """Movie use cases: ingest from TMDB, page/lookup, and vector similarity search."""
+
+    # Maps TMDB numeric genre ids to the human-readable genre names stored
+    # alongside each movie and used for embedding text / display.
     __GENRE_ID_TO_TYPE_MAP = {
         28: "action",
         12: "adventure",
@@ -43,9 +53,11 @@ class MovieService:
         self.__embedding_model = get_embedding_model()
 
     def __get_genre_types_to_text(self, genre_types: List[str]) -> str:
+        """Join genre names into a single comma-separated string for embedding text."""
         return ", ".join(genre_types)
 
     def __movie_to_text(self, movie: MovieCreateRequest) -> str:
+        """Render a movie's fields into the text that gets embedded for similarity search."""
         return f"""
         Title: {movie.title}
         Overview: {movie.overview}
@@ -55,6 +67,7 @@ class MovieService:
         """.strip()
 
     def __get_genre_ids_to_type(self, genre_ids: List[int]) -> List[str]:
+        """Map TMDB numeric genre ids to their genre name, dropping unrecognized ids."""
         genre_types: List[str] = []
         for id in genre_ids:
             genre_type = self.__GENRE_ID_TO_TYPE_MAP.get(id)
@@ -64,6 +77,10 @@ class MovieService:
         return genre_types
 
     def add_movie(self, movie: TMDBResponse) -> MovieResponse:
+        """Persist a single TMDB movie, computing and storing its embedding.
+
+        Raises HTTPException(400) if a movie with the same TMDB id already exists.
+        """
         ### movie.id refers to TMDB movie id
         if self.__movie_repo.get_movie_by_tmdb_id(movie.id):
             raise HTTPException(
@@ -85,6 +102,7 @@ class MovieService:
         return MovieResponse(**movie.__dict__)
 
     def add_movies(self, movies: List[TMDBResponse]):
+        """Persist a batch of TMDB movies, logging and skipping any that fail (e.g. duplicates)."""
         for movie in movies:
             try:
                 self.add_movie(movie)
@@ -92,6 +110,7 @@ class MovieService:
                 logger.error(f"{e}")
 
     def get_movie_by_id(self, movie_id: UUID) -> MovieResponse:
+        """Fetch a single movie by its internal id, or raise HTTPException(400) if missing."""
         movie = self.__movie_repo.get_movie_by_id(id=movie_id)
 
         if movie:
@@ -101,6 +120,7 @@ class MovieService:
         )
 
     def get_movies_by_page(self, page: int) -> List[MovieResponse]:
+        """Fetch a fixed-size (MOVIES_PER_PAGE) page of movies, 1-indexed."""
         offset = (page - 1) * MOVIES_PER_PAGE
         limit = MOVIES_PER_PAGE
 
@@ -109,11 +129,13 @@ class MovieService:
         return movies_response
 
     def similarity_search(self, query_embeddings: List[float]) -> List[MovieResponse]:
+        """Return the movies whose embeddings are closest to the given query embedding."""
         movies = self.__movie_repo.similarity_search(query_embeddings)
         movies_response = [MovieResponse(**movie.__dict__) for movie in movies]
         return movies_response
 
     def get_all_movies(self) -> List[MovieResponse]:
+        """Fetch every movie in the database."""
         movies = self.__movie_repo.get_all_movies()
         movies_response = [MovieResponse(**movie.__dict__) for movie in movies]
         return movies_response

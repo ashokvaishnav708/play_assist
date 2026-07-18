@@ -1,3 +1,9 @@
+"""Routes for browsing and searching TV shows via TMDB.
+
+Not currently mounted on the app (see main.py) - "TV Series will be
+implemented later".
+"""
+
 from fastapi import APIRouter
 from pydantic import BaseModel
 from typing import List
@@ -18,6 +24,8 @@ POSTER_BASE_URL  ="https://image.tmdb.org/t/p/w220_and_h330_face"
 API_KEY = get_env_key("TMDB_API_KEY")
 
 class TVShow(BaseModel):
+    """Shape of a single TV show result as returned by the TMDB API."""
+
     id: int
     title: str
     release_date: str
@@ -26,10 +34,13 @@ class TVShow(BaseModel):
     overview: str
 
 class TVShows(BaseModel):
+    """A list of TV shows, used by list/search endpoints."""
+
     tv_shows: List[TVShow]
 
 
 async def fetch_tv_shows(url: str) -> List[TVShow]:
+    """Call a TMDB TV-show endpoint and parse its results into TVShow models."""
     async with httpx.AsyncClient() as client:
         response = await client.get(url)
         fetched_tv_shows: List = response.json()["results"]
@@ -38,6 +49,7 @@ async def fetch_tv_shows(url: str) -> List[TVShow]:
 
 @router.get("/popular", response_model=TVShows)
 async def popular_tv_shows() -> TVShows:
+    """Return TMDB's current list of popular TV shows."""
     logger.info("Popular TV shows endpoint invoked")
     popular_tv_shows_url = f"{BASE_URL}/tv/popular?api_key={API_KEY}"
     popular_tv_shows = await fetch_tv_shows(popular_tv_shows_url)
@@ -45,6 +57,7 @@ async def popular_tv_shows() -> TVShows:
 
 @router.get("/search", response_model=TVShows)
 async def search_tv_show(query: str) -> TVShows:
+    """Search TMDB TV shows by free-text query."""
     logger.info(f"Search TV shows endpoint invoked with query: {query}")
     search_url = f"{BASE_URL}/search/tv?api_key={API_KEY}&query={quote(query)}"
     search_result = await fetch_tv_shows(search_url)

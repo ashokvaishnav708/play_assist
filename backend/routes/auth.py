@@ -1,3 +1,5 @@
+"""Authentication routes: signup, login, token refresh, logout, and current-user lookup."""
+
 from fastapi import APIRouter, Depends
 from models.user import UserCreateRequest, UserLoginRequest, UserWithToken, UserResponse, TokenPair, RefreshRequest
 from db.database import get_db
@@ -14,6 +16,7 @@ router = APIRouter()
 
 @router.post("/login", status_code=200, response_model=UserWithToken)
 def login(user_login: UserLoginRequest, session: Session = Depends(get_db)):
+    """Authenticate a user by email/password and issue an access/refresh token pair."""
     try:
         return UserService(session).login(login_details=user_login)
     except Exception as e:
@@ -22,6 +25,7 @@ def login(user_login: UserLoginRequest, session: Session = Depends(get_db)):
 
 @router.post("/signup", status_code=200, response_model=UserResponse)
 def sign_up(user_data: UserCreateRequest, session: Session = Depends(get_db)):
+    """Create a new user account."""
     try:
         return UserService(session).signup(user_data=user_data)
     except Exception as e:
@@ -30,6 +34,7 @@ def sign_up(user_data: UserCreateRequest, session: Session = Depends(get_db)):
 
 @router.post("/refresh", status_code=200, response_model=TokenPair)
 def refresh(refresh_request: RefreshRequest, session: Session = Depends(get_db)):
+    """Exchange a valid refresh token for a new access/refresh token pair."""
     try:
         return UserService(session).refresh(refresh_token=refresh_request.refresh_token)
     except Exception as e:
@@ -38,6 +43,7 @@ def refresh(refresh_request: RefreshRequest, session: Session = Depends(get_db))
 
 @router.post("/logout", status_code=200)
 def logout(current_user: UserResponse = Depends(get_current_user), session: Session = Depends(get_db)):
+    """Log out the current user by invalidating all of their outstanding tokens."""
     try:
         UserService(session).logout(user_id=current_user.id)
         return {"detail": "Logged out successfully."}
@@ -47,4 +53,5 @@ def logout(current_user: UserResponse = Depends(get_current_user), session: Sess
 
 @router.get("/me", status_code=200, response_model=UserResponse)
 def me(current_user: UserResponse = Depends(get_current_user)):
+    """Return the currently authenticated user, resolved from the bearer token."""
     return current_user

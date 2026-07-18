@@ -1,3 +1,5 @@
+"""Routes for the AI-powered movie recommendation endpoint."""
+
 from fastapi import APIRouter, Depends
 from logging import getLogger
 
@@ -18,6 +20,7 @@ router = APIRouter()
 async def query_ai(
     request: QueryRequest, session: Session = Depends(get_db)
 ) -> QueryResponse:
+    """Answer a free-text movie question using the RAG agent and return suggestions."""
     query = request.question
     logger.debug(f"AI query received: {query}")
 

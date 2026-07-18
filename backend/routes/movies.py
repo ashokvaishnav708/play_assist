@@ -1,3 +1,5 @@
+"""Routes for browsing, searching, and importing movies."""
+
 from fastapi import APIRouter, Query, Depends, status
 from typing import List
 import httpx
@@ -23,6 +25,7 @@ TMDB_API_KEY = get_env_key("TMDB_API_KEY")
 
 
 def add_poster_url(movie: TMDBResponse) -> TMDBResponse:
+    """Rewrite a TMDB-relative poster path into a full, displayable image URL."""
     movie
     if movie.poster_path is None:
         return movie
@@ -32,6 +35,7 @@ def add_poster_url(movie: TMDBResponse) -> TMDBResponse:
 
 
 async def fetch_latest_popular_movies(page: int = 1) -> List[TMDBResponse]:
+    """Fetch one page of "popular movies" results from the TMDB API."""
     url = f"{BASE_URL}/movie/popular"
     params = {"api_key": TMDB_API_KEY, "page": page}
     movies: List[TMDBResponse] = []
@@ -71,6 +75,7 @@ async def load_movies(
 async def movies_by_page(
     page: int = Query(1, ge=1), session: Session = Depends(get_db)
 ) -> MoviesResponse:
+    """Return one page of movies already stored in the database."""
     logger.debug(f"Movies requested for page {page}")
     movie_service = MovieService(session)
     movies = movie_service.get_movies_by_page(page)
@@ -81,6 +86,13 @@ async def movies_by_page(
 async def search_movie(
     query: str = Query(...), session: Session = Depends(get_db)
 ) -> MoviesResponse:
+    """Search movies by free-text query.
+
+    NOTE: MovieService currently has no `search_movies` method (only
+    `similarity_search`, which needs an embedding rather than raw text), so
+    this route will raise an AttributeError at runtime. Left as-is per
+    request - not fixed here.
+    """
     logger.debug(f"Search movies endpoint invoked with query: {query}")
 
     movie_service = MovieService(session)

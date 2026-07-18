@@ -1,3 +1,6 @@
+"""Factory helpers for the LLM chat model and embedding model, cached as
+process-wide singletons so the SDK clients are constructed only once."""
+
 from langchain_anthropic import ChatAnthropic
 from langchain_ollama import OllamaEmbeddings
 from utility.utils import get_env_key
@@ -12,12 +15,13 @@ ANTHROPIC_MODEL = get_env_key("ANTHROPIC_MODEL")
 OLLAMA_BASE_URL = get_env_key("OLLAMA_BASE_URL")
 EMBED_MODEL = get_env_key("EMBED_MODEL")
 
-
+# Lazily-initialized module-level singletons, shared across all requests.
 _LLM: ChatAnthropic | None = None
 _EMBEDDINGS: OllamaEmbeddings | None = None
 
 
 def get_llm_model() -> ChatAnthropic:
+    """Return the shared Anthropic chat model, creating it on first call."""
     global _LLM
 
     if _LLM is None:
@@ -34,6 +38,7 @@ def get_llm_model() -> ChatAnthropic:
 
 
 def get_embedding_model() -> OllamaEmbeddings:
+    """Return the shared Ollama embedding model, creating it on first call."""
     global _EMBEDDINGS
 
     if _EMBEDDINGS is None:
