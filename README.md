@@ -1,6 +1,6 @@
 # Play Assist
 
-![Play Assist cover](frontend/public/cover.png)
+![Play Assist cover](frontend/public/cover.svg)
 
 An AI-powered movie discovery app: browse and search movies sourced from
 [TMDB](https://www.themoviedb.org/), and ask a Retrieval-Augmented Generation
