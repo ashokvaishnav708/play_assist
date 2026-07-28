@@ -15,6 +15,7 @@ function NavigationBar() {
     return (
         <nav className="bg-black/80 backdrop-blur-md px-6 py-4 flex justify-between items-center shadow-lg border-b border-gray-800/50 sticky top-0 z-50">
             <Link to='/' className="flex items-center gap-3 hover:opacity-80 transition-opacity group">
+                <span><img src="app_logo.svg" className="h-10" /></span>
                 <span className="text-2xl font-bold bg-linear-to-r from-red-600 to-red-500 bg-clip-text text-transparent">
                     Play Assist
                 </span>

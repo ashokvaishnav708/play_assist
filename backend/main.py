@@ -1,5 +1,3 @@
-"""FastAPI application entry point: wires up middleware, routers, and startup/shutdown."""
-
 import uvicorn
 import logging
 from fastapi import FastAPI
@@ -7,23 +5,17 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
 from routes.movies import router as movies_router
-from routes.tv_shows import router as tv_shows_router
 from routes.ask_ai import router as ask_ai
 from routes.auth import router as auth_router
 
+# from routes.tv_shows import router as tv_shows_router
+
 from db.database import init_db
-
-from utility.utils import get_env_key
-
-GOOGLE_API_KEY = get_env_key("GEMINI_API_KEY")
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    handlers=[
-        logging.FileHandler("app.log"),
-        logging.StreamHandler()
-    ]
+    handlers=[logging.FileHandler("app.log"), logging.StreamHandler()],
 )
 # Suppress logs from third-party libraries
 logging.getLogger("httpx").setLevel(logging.WARNING)
@@ -35,26 +27,24 @@ logger = logging.getLogger(__name__)
 
 DEBUG = True
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Run startup work (DB init/migrations/seeding) before serving any requests."""
     init_db()
     yield
 
 
 app = FastAPI(debug=DEBUG, lifespan=lifespan)
 
-# Frontend dev server origins allowed to call this API with credentials.
-origins = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173"
-    ]
+origins = ["http://localhost:5173", "http://127.0.0.1:5173"]
 
-app.add_middleware(CORSMiddleware,
-                   allow_origins=origins,
-                   allow_credentials=True,
-                   allow_methods=["*"],
-                   allow_headers=["*"])
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(movies_router, prefix="/movies", tags=["Movies"])
 # TV Series will be implemented later
