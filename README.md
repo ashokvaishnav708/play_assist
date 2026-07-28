@@ -1,5 +1,7 @@
 # Play Assist
 
+![Play Assist cover](frontend/public/cover.png)
+
 An AI-powered movie discovery app: browse and search movies sourced from
 [TMDB](https://www.themoviedb.org/), and ask a Retrieval-Augmented Generation
 (RAG) agent for personalized recommendations backed by vector similarity
